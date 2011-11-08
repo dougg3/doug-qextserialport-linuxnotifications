@@ -11,6 +11,3 @@ SOURCES += main.cpp \
 		QespTest.cpp
 
 include(../../src/qextserialport.pri)
-
-unix:DEFINES   = _TTY_POSIX_
-win32:DEFINES  = _TTY_WIN_
