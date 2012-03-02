@@ -1,6 +1,6 @@
 TEMPLATE = app
 DEPENDPATH += .
-QT += core gui widgets qesp
+QT += core gui widgets extserialport
 
 HEADERS += MainWindow.h \
 		MessageWindow.h \

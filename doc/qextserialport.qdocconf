@@ -24,7 +24,6 @@ qhp.qesp.indexTitle      = QextSerialPort Reference Documentation
 qhp.qesp.indexRoot       = 
 qhp.qesp.extraFiles      = style/style.css
 
-
 #------------------------------------------------------------------
 outputdir = html
 outputformats = HTML

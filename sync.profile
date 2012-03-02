@@ -1,5 +1,5 @@
 %modules = ( # path to module name map
-    "qesp" => "$basedir/src/qesp",
+    "ExtSerialPort" => "$basedir/src/extserialport",
 );
 %moduleheaders = ( # restrict the module headers to those found in relative path
 );
@@ -9,5 +9,5 @@
     "core" => "#include <QtCore/QtCore>\n",
 );
 %modulepris = (
-    "qesp" => "$basedir/modules/qt_qesp.pri",
+    "ExtSerialPort" => "$basedir/modules/qt_extserialport.pri",
 );

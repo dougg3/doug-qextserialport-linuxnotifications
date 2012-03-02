@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets qesp
+QT       += core gui widgets extserialport
 
 TARGET = uartassistant
 TEMPLATE = app
