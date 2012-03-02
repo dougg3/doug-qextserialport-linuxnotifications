@@ -75,7 +75,7 @@ public:
 #ifdef Q_OS_WIN
     LRESULT onDeviceChanged( WPARAM wParam, LPARAM lParam );
     bool matchAndDispatchChangedDevice(const QString & deviceID, const GUID & guid, WPARAM wParam);
-#  ifdef HAS_QWIDGET
+#  ifdef QT_WIDGETS_LIB
     QextSerialRegistrationWidget* notificationWidget;
 #  endif
 #endif /*Q_OS_WIN*/
