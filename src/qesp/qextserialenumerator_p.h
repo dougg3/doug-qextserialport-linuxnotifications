@@ -59,10 +59,6 @@
 #  include <IOKit/usb/IOUSBLib.h>
 #endif /*Q_OS_MAC*/
 
-#if (defined(QT_GUI_LIB) && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)) || defined(QT_WIDGETS_LIB)
-#  define HAS_QWIDGET
-#endif
-
 class QextSerialRegistrationWidget;
 class QextSerialEnumeratorPrivate
 {

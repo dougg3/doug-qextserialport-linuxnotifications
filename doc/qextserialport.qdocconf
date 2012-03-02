@@ -14,7 +14,7 @@ imagedirs                = ./examples/images images
 
 Cpp.ignoretokens         = QEXTSERIALPORT_EXPORT 
 
-indexes = $QTDIR/doc/html/qt.index
+#indexes = $QTDIR/doc/html/qt.index
 
 qhp.projects             = qesp
 qhp.qesp.file            = qesp.qhp

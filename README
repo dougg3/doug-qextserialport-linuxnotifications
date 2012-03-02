@@ -1,4 +1,8 @@
-http://code.google.com/r/dbzhang800-qextserialport/
+================================================================================================
+NOTE: "debao_2.0 branch" is Qt5 only, while the "default branch" works under both Qt4 and Qt5
+
+       http://code.google.com/r/dbzhang800-qextserialport/
+================================================================================================
 
 = About QextSerialPort =
 

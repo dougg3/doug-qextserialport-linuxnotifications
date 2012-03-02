@@ -4,13 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-contains(QT_VERSION, ^5\\..*\\..*): QT += widgets
+QT       += core gui widgets qesp
 
 TARGET = uartassistant
 TEMPLATE = app
-
-include(../../src/qextserialport.pri)
 
 SOURCES += main.cpp\
         dialog.cpp\

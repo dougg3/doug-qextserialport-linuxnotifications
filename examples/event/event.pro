@@ -1,7 +1,5 @@
 TEMPLATE = app
-DEPENDPATH += .
+QT += qesp
 CONFIG += console
-include(../../src/qextserialport.pri)
-
 SOURCES += main.cpp PortListener.cpp
 HEADERS += PortListener.h

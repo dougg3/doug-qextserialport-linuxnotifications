@@ -176,7 +176,6 @@ public:
     int CustomBaudRate;
 };
 
-class QextWinEventNotifier;
 class QWinEventNotifier;
 class QReadWriteLock;
 class QSocketNotifier;
@@ -217,11 +216,7 @@ public:
     OVERLAPPED overlap;
     COMMCONFIG Win_CommConfig;
     COMMTIMEOUTS Win_CommTimeouts;
-#  ifndef QESP_NO_QT4_PRIVATE
     QWinEventNotifier *winEventNotifier;
-#  else
-    QextWinEventNotifier *winEventNotifier;
-#  endif
     DWORD eventMask;
     QList<OVERLAPPED*> pendingWrites;
     QReadWriteLock* bytesToWriteLock;
