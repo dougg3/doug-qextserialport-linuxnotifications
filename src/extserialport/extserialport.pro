@@ -1,15 +1,20 @@
 load(qt_module)
-TARGET     = QextSerialPort
+
+#Must be the same as that specified in modules/*.pri file.
+TARGET     = $$QT.extserialport.name
+
 QPRO_PWD   = $$PWD
 CONFIG    += module
-MODULE_PRI = ../../modules/qt_qesp.pri
-
+MODULE_PRI = ../../modules/qt_extserialport.pri
 QT = core
 
 DEFINES += QEXTSERIALPORT_BUILD_SHARED QT_MAKEDLL
 load(qt_module_config)
 
-HEADERS                += qespversion.h
+#Version must be add or Qt's Version will be used. This is a bug in qt_module_config.prf ?
+VERSION = $$QT.extserialport.VERSION
+
+HEADERS                += extserialportversion.h
 
 HEADERS                += qextserialport.h \
                           qextserialport_p.h \
