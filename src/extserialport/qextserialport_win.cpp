@@ -75,7 +75,7 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
     DWORD confSize = sizeof(COMMCONFIG);
     Win_CommConfig.dwSize = confSize;
     DWORD dwFlagsAndAttributes = 0;
-    if (_queryMode == QextSerialPort::EventDriven)
+    if (Settings.QueryMode == QextSerialPort::EventDriven)
         dwFlagsAndAttributes += FILE_FLAG_OVERLAPPED;
 
     /*open the port*/
@@ -98,7 +98,7 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
         updatePortSettings();
 
         //init event driven approach
-        if (_queryMode == QextSerialPort::EventDriven) {
+        if (Settings.QueryMode == QextSerialPort::EventDriven) {
             if (!SetCommMask( Win_Handle, EV_TXEMPTY | EV_RXCHAR | EV_DSR)) {
                 QESP_WARNING()<<"failed to set Comm Mask. Error code:"<<GetLastError();
                 return false;
@@ -192,7 +192,7 @@ qint64 QextSerialPortPrivate::readData_sys(char *data, qint64 maxSize)
 {
     DWORD bytesRead = 0;
     bool failed = false;
-    if (_queryMode == QextSerialPort::EventDriven) {
+    if (Settings.QueryMode == QextSerialPort::EventDriven) {
         OVERLAPPED overlapRead;
         ZeroMemory(&overlapRead, sizeof(OVERLAPPED));
         if (!ReadFile(Win_Handle, (void*)data, (DWORD)maxSize, & bytesRead, & overlapRead)) {
@@ -223,7 +223,7 @@ qint64 QextSerialPortPrivate::writeData_sys(const char *data, qint64 maxSize)
 {
     DWORD bytesWritten = 0;
     bool failed = false;
-    if (_queryMode == QextSerialPort::EventDriven) {
+    if (Settings.QueryMode == QextSerialPort::EventDriven) {
         OVERLAPPED* newOverlapWrite = new OVERLAPPED;
         ZeroMemory(newOverlapWrite, sizeof(OVERLAPPED));
         newOverlapWrite->hEvent = CreateEvent(NULL, true, false, NULL);
@@ -387,7 +387,7 @@ void QextSerialPortPrivate::updatePortSettings()
 
     //fill struct : COMMTIMEOUTS
     if (settingsDirtyFlags & DFE_TimeOut) {
-        if (_queryMode != QextSerialPort::EventDriven) {
+        if (Settings.QueryMode != QextSerialPort::EventDriven) {
             int millisec = Settings.Timeout_Millisec;
             if (millisec == -1) {
                 Win_CommTimeouts.ReadIntervalTimeout = MAXDWORD;

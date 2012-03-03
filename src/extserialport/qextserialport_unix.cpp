@@ -84,7 +84,7 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
         settingsDirtyFlags = DFE_ALL;
         updatePortSettings();
 
-        if (_queryMode == QextSerialPort::EventDriven) {
+        if (Settings.QueryMode == QextSerialPort::EventDriven) {
             readNotifier = new QSocketNotifier(fd, QSocketNotifier::Read, q);
             q->connect(readNotifier, SIGNAL(activated(int)), q, SLOT(_q_canRead()));
         }

@@ -195,7 +195,6 @@ public:
     QextReadBuffer readBuffer;
     int settingsDirtyFlags;
     ulong lastErr;
-    QextSerialPort::QueryMode _queryMode;
 
     // platform specific members
 #ifdef Q_OS_UNIX
