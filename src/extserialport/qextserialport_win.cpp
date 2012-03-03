@@ -155,28 +155,28 @@ qint64 QextSerialPortPrivate::bytesAvailable_sys() const
 */
 void QextSerialPortPrivate::translateError(ulong error) {
     if (error&CE_BREAK) {
-        lastErr=E_BREAK_CONDITION;
+        lastErr=QextSerialPort::E_BREAK_CONDITION;
     }
     else if (error&CE_FRAME) {
-        lastErr=E_FRAMING_ERROR;
+        lastErr=QextSerialPort::E_FRAMING_ERROR;
     }
     else if (error&CE_IOE) {
-        lastErr=E_IO_ERROR;
+        lastErr=QextSerialPort::E_IO_ERROR;
     }
     else if (error&CE_MODE) {
-        lastErr=E_INVALID_FD;
+        lastErr=QextSerialPort::E_INVALID_FD;
     }
     else if (error&CE_OVERRUN) {
-        lastErr=E_BUFFER_OVERRUN;
+        lastErr=QextSerialPort::E_BUFFER_OVERRUN;
     }
     else if (error&CE_RXPARITY) {
-        lastErr=E_RECEIVE_PARITY_ERROR;
+        lastErr=QextSerialPort::E_RECEIVE_PARITY_ERROR;
     }
     else if (error&CE_RXOVER) {
-        lastErr=E_RECEIVE_OVERFLOW;
+        lastErr=QextSerialPort::E_RECEIVE_OVERFLOW;
     }
     else if (error&CE_TXFULL) {
-        lastErr=E_TRANSMIT_OVERFLOW;
+        lastErr=QextSerialPort::E_TRANSMIT_OVERFLOW;
     }
 }
 
@@ -207,7 +207,7 @@ qint64 QextSerialPortPrivate::readData_sys(char *data, qint64 maxSize)
     if (!failed)
         return (qint64)bytesRead;
 
-    lastErr = E_READ_FAILED;
+    lastErr = QextSerialPort::E_READ_FAILED;
     return -1;
 }
 
@@ -253,7 +253,7 @@ qint64 QextSerialPortPrivate::writeData_sys(const char *data, qint64 maxSize)
     if (!failed)
         return (qint64)bytesWritten;
 
-    lastErr = E_WRITE_FAILED;
+    lastErr = QextSerialPort::E_WRITE_FAILED;
     return -1;
 }
 
@@ -268,10 +268,10 @@ void QextSerialPortPrivate::setRts_sys(bool set) {
 ulong QextSerialPortPrivate::lineStatus_sys(void) {
     unsigned long Status=0, Temp=0;
     GetCommModemStatus(Win_Handle, &Temp);
-    if (Temp & MS_CTS_ON) Status|=LS_CTS;
-    if (Temp & MS_DSR_ON) Status|=LS_DSR;
-    if (Temp & MS_RING_ON) Status|=LS_RI;
-    if (Temp & MS_RLSD_ON) Status|=LS_DCD;
+    if (Temp & MS_CTS_ON) Status|=QextSerialPort::LS_CTS;
+    if (Temp & MS_DSR_ON) Status|=QextSerialPort::LS_DSR;
+    if (Temp & MS_RING_ON) Status|=QextSerialPort::LS_RI;
+    if (Temp & MS_RLSD_ON) Status|=QextSerialPort::LS_DCD;
     return Status;
 }
 
@@ -318,7 +318,7 @@ void QextSerialPortPrivate::_q_onWinEvent(HANDLE h)
             }
         }
         if (eventMask & EV_DSR) {
-            if (lineStatus_sys() & LS_DSR)
+            if (lineStatus_sys() & QextSerialPort::LS_DSR)
                 Q_EMIT q->dsrChanged(true);
             else
                 Q_EMIT q->dsrChanged(false);
@@ -334,27 +334,27 @@ void QextSerialPortPrivate::updatePortSettings()
 
     //fill struct : COMMCONFIG
     if (settingsDirtyFlags & DFE_BaudRate) {
-        if (Settings.BaudRate != BAUDCustom)
+        if (Settings.BaudRate != QextSerialPort::BAUDCustom)
             Win_CommConfig.dcb.BaudRate = Settings.BaudRate;
         else
             Win_CommConfig.dcb.BaudRate = Settings.CustomBaudRate;
     }
     if (settingsDirtyFlags & DFE_Parity) {
         Win_CommConfig.dcb.Parity = (BYTE)Settings.Parity;
-        Win_CommConfig.dcb.fParity = (Settings.Parity == PAR_NONE) ? FALSE : TRUE;
+        Win_CommConfig.dcb.fParity = (Settings.Parity == QextSerialPort::PAR_NONE) ? FALSE : TRUE;
     }
     if (settingsDirtyFlags & DFE_DataBits) {
         Win_CommConfig.dcb.ByteSize = (BYTE)Settings.DataBits;
     }
     if (settingsDirtyFlags & DFE_StopBits) {
         switch (Settings.StopBits) {
-        case STOP_1:
+        case QextSerialPort::STOP_1:
             Win_CommConfig.dcb.StopBits = ONESTOPBIT;
             break;
-        case STOP_1_5:
+        case QextSerialPort::STOP_1_5:
             Win_CommConfig.dcb.StopBits = ONE5STOPBITS;
             break;
-        case STOP_2:
+        case QextSerialPort::STOP_2:
             Win_CommConfig.dcb.StopBits = TWOSTOPBITS;
             break;
         }
@@ -362,21 +362,21 @@ void QextSerialPortPrivate::updatePortSettings()
     if (settingsDirtyFlags & DFE_Flow) {
         switch(Settings.FlowControl) {
         /*no flow control*/
-        case FLOW_OFF:
+        case QextSerialPort::FLOW_OFF:
             Win_CommConfig.dcb.fOutxCtsFlow=FALSE;
             Win_CommConfig.dcb.fRtsControl=RTS_CONTROL_DISABLE;
             Win_CommConfig.dcb.fInX=FALSE;
             Win_CommConfig.dcb.fOutX=FALSE;
             break;
         /*software (XON/XOFF) flow control*/
-        case FLOW_XONXOFF:
+        case QextSerialPort::FLOW_XONXOFF:
             Win_CommConfig.dcb.fOutxCtsFlow=FALSE;
             Win_CommConfig.dcb.fRtsControl=RTS_CONTROL_DISABLE;
             Win_CommConfig.dcb.fInX=TRUE;
             Win_CommConfig.dcb.fOutX=TRUE;
             break;
         /*hardware flow control*/
-        case FLOW_HARDWARE:
+        case QextSerialPort::FLOW_HARDWARE:
             Win_CommConfig.dcb.fOutxCtsFlow=TRUE;
             Win_CommConfig.dcb.fRtsControl=RTS_CONTROL_HANDSHAKE;
             Win_CommConfig.dcb.fInX=FALSE;

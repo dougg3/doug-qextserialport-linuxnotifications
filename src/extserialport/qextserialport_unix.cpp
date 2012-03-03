@@ -59,9 +59,6 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
     Q_Q(QextSerialPort);
     //note: linux 2.6.21 seems to ignore O_NDELAY flag
     if ((fd = ::open(port.toAscii() ,O_RDWR | O_NOCTTY | O_NDELAY)) != -1) {
-
-        /*In the Private class, I can not call QIODevice::open()*/
-//        QIODevice::open(mode);          // Flag the port as opened
         q->setOpenMode(mode);
         ::tcgetattr(fd, &old_termios);    // Save the old termios
         Posix_CommConfig = old_termios; // Make a working copy
@@ -73,9 +70,10 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
         Posix_CommConfig.c_iflag &= (~(INPCK|IGNPAR|PARMRK|ISTRIP|ICRNL|IXANY));
         Posix_CommConfig.c_oflag &= (~OPOST);
         Posix_CommConfig.c_cc[VMIN] = 0;
-#ifdef _POSIX_VDISABLE  // Is a disable character available on this system?
+#ifdef _POSIX_VDISABLE
+        // Is a disable character available on this system?
         // Some systems allow for per-device disable-characters, so get the
-        //  proper value for the configured device
+        // proper value for the configured device
         const long vdisable = ::fpathconf(fd, _PC_VDISABLE);
         Posix_CommConfig.c_cc[VINTR] = vdisable;
         Posix_CommConfig.c_cc[VQUIT] = vdisable;
@@ -92,7 +90,7 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
         }
         return true;
     } else {
-        lastErr = E_FILE_NOT_FOUND;
+        lastErr = QextSerialPort::E_FILE_NOT_FOUND;
         return false;
     }
 }
@@ -134,13 +132,13 @@ void QextSerialPortPrivate::translateError(ulong error)
     switch (error) {
         case EBADF:
         case ENOTTY:
-            lastErr = E_INVALID_FD;
+            lastErr = QextSerialPort::E_INVALID_FD;
             break;
         case EINTR:
-            lastErr = E_CAUGHT_NON_BLOCKED_SIGNAL;
+            lastErr = QextSerialPort::E_CAUGHT_NON_BLOCKED_SIGNAL;
             break;
         case ENOMEM:
-            lastErr = E_NO_MEMORY;
+            lastErr = QextSerialPort::E_NO_MEMORY;
             break;
     }
 }
@@ -171,14 +169,14 @@ unsigned long QextSerialPortPrivate::lineStatus_sys()
 {
     unsigned long Status=0, Temp=0;
     ::ioctl(fd, TIOCMGET, &Temp);
-    if (Temp & TIOCM_CTS) Status |= LS_CTS;
-    if (Temp & TIOCM_DSR) Status |= LS_DSR;
-    if (Temp & TIOCM_RI ) Status |= LS_RI;
-    if (Temp & TIOCM_CD ) Status |= LS_DCD;
-    if (Temp & TIOCM_DTR) Status |= LS_DTR;
-    if (Temp & TIOCM_RTS) Status |= LS_RTS;
-    if (Temp & TIOCM_ST ) Status |= LS_ST;
-    if (Temp & TIOCM_SR ) Status |= LS_SR;
+    if (Temp & TIOCM_CTS) Status |= QextSerialPort::LS_CTS;
+    if (Temp & TIOCM_DSR) Status |= QextSerialPort::LS_DSR;
+    if (Temp & TIOCM_RI ) Status |= QextSerialPort::LS_RI;
+    if (Temp & TIOCM_CD ) Status |= QextSerialPort::LS_DCD;
+    if (Temp & TIOCM_DTR) Status |= QextSerialPort::LS_DTR;
+    if (Temp & TIOCM_RTS) Status |= QextSerialPort::LS_RTS;
+    if (Temp & TIOCM_ST ) Status |= QextSerialPort::LS_ST;
+    if (Temp & TIOCM_SR ) Status |= QextSerialPort::LS_SR;
     return Status;
 }
 
@@ -194,7 +192,7 @@ qint64 QextSerialPortPrivate::readData_sys(char * data, qint64 maxSize)
 {
     int retVal = ::read(fd, data, maxSize);
     if (retVal == -1)
-        lastErr = E_READ_FAILED;
+        lastErr = QextSerialPort::E_READ_FAILED;
 
     return retVal;
 }
@@ -211,7 +209,7 @@ qint64 QextSerialPortPrivate::writeData_sys(const char * data, qint64 maxSize)
 {
     int retVal = ::write(fd, data, maxSize);
     if (retVal == -1)
-       lastErr = E_WRITE_FAILED;
+       lastErr = QextSerialPort::E_WRITE_FAILED;
 
     return (qint64)retVal;
 }
@@ -237,104 +235,100 @@ void QextSerialPortPrivate::updatePortSettings()
 
     if (settingsDirtyFlags & DFE_BaudRate) {
         switch (Settings.BaudRate) {
-        case BAUD50:
+        case QextSerialPort::BAUD50:
             setBaudRate2Termios(&Posix_CommConfig, B50);
             break;
-        case BAUD75:
+        case QextSerialPort::BAUD75:
             setBaudRate2Termios(&Posix_CommConfig, B75);
             break;
-        case BAUD110:
+        case QextSerialPort::BAUD110:
             setBaudRate2Termios(&Posix_CommConfig, B110);
             break;
-        case BAUD134:
+        case QextSerialPort::BAUD134:
             setBaudRate2Termios(&Posix_CommConfig, B134);
             break;
-        case BAUD150:
+        case QextSerialPort::BAUD150:
             setBaudRate2Termios(&Posix_CommConfig, B150);
             break;
-        case BAUD200:
+        case QextSerialPort::BAUD200:
             setBaudRate2Termios(&Posix_CommConfig, B200);
             break;
-        case BAUD300:
+        case QextSerialPort::BAUD300:
             setBaudRate2Termios(&Posix_CommConfig, B300);
             break;
-        case BAUD600:
+        case QextSerialPort::BAUD600:
             setBaudRate2Termios(&Posix_CommConfig, B600);
             break;
-        case BAUD1200:
+        case QextSerialPort::BAUD1200:
             setBaudRate2Termios(&Posix_CommConfig, B1200);
             break;
-        case BAUD1800:
+        case QextSerialPort::BAUD1800:
             setBaudRate2Termios(&Posix_CommConfig, B1800);
             break;
-        case BAUD2400:
+        case QextSerialPort::BAUD2400:
             setBaudRate2Termios(&Posix_CommConfig, B2400);
             break;
-        case BAUD4800:
+        case QextSerialPort::BAUD4800:
             setBaudRate2Termios(&Posix_CommConfig, B4800);
             break;
-        case BAUD9600:
+        case QextSerialPort::BAUD9600:
             setBaudRate2Termios(&Posix_CommConfig, B9600);
             break;
-        case BAUD19200:
+        case QextSerialPort::BAUD19200:
             setBaudRate2Termios(&Posix_CommConfig, B19200);
             break;
-        case BAUD38400:
+        case QextSerialPort::BAUD38400:
             setBaudRate2Termios(&Posix_CommConfig, B38400);
             break;
-        case BAUD57600:
+        case QextSerialPort::BAUD57600:
             setBaudRate2Termios(&Posix_CommConfig, B57600);
             break;
 #ifdef B76800
-        case BAUD76800:
+        case QextSerialPort::BAUD76800:
             setBaudRate2Termios(&Posix_CommConfig, B76800);
             break;
 #endif
-        case BAUD115200:
+        case QextSerialPort::BAUD115200:
             setBaudRate2Termios(&Posix_CommConfig, B115200);
             break;
-        case BAUDCustom:
+        case QextSerialPort::BAUDCustom:
             setBaudRate2Termios(&Posix_CommConfig, Settings.CustomBaudRate);
             break;
         }
     }
     if (settingsDirtyFlags & DFE_Parity) {
         switch (Settings.Parity) {
-        /*space parity*/
-        case PAR_SPACE:
+        case QextSerialPort::PAR_SPACE:
             /*space parity not directly supported - add an extra data bit to simulate it*/
             settingsDirtyFlags |= DFE_DataBits;
             break;
-        /*no parity*/
-        case PAR_NONE:
+        case QextSerialPort::PAR_NONE:
             Posix_CommConfig.c_cflag &= (~PARENB);
             break;
-        /*even parity*/
-        case PAR_EVEN:
+        case QextSerialPort::PAR_EVEN:
             Posix_CommConfig.c_cflag &= (~PARODD);
             Posix_CommConfig.c_cflag |= PARENB;
             break;
-        /*odd parity*/
-        case PAR_ODD:
+        case QextSerialPort::PAR_ODD:
             Posix_CommConfig.c_cflag |= (PARENB|PARODD);
             break;
         }
     }
     /*must after Parity settings*/
     if (settingsDirtyFlags & DFE_DataBits) {
-        if (Settings.Parity != PAR_SPACE) {
+        if (Settings.Parity != QextSerialPort::PAR_SPACE) {
             Posix_CommConfig.c_cflag &= (~CSIZE);
             switch(Settings.DataBits) {
-            case DATA_5:
+            case QextSerialPort::DATA_5:
                 Posix_CommConfig.c_cflag |= CS5;
                 break;
-            case DATA_6:
+            case QextSerialPort::DATA_6:
                 Posix_CommConfig.c_cflag |= CS6;
                 break;
-            case DATA_7:
+            case QextSerialPort::DATA_7:
                 Posix_CommConfig.c_cflag |= CS7;
                 break;
-            case DATA_8:
+            case QextSerialPort::DATA_8:
                 Posix_CommConfig.c_cflag |= CS8;
                 break;
             }
@@ -342,16 +336,16 @@ void QextSerialPortPrivate::updatePortSettings()
             /*space parity not directly supported - add an extra data bit to simulate it*/
             Posix_CommConfig.c_cflag &= ~(PARENB|CSIZE);
             switch(Settings.DataBits) {
-            case DATA_5:
+            case QextSerialPort::DATA_5:
                 Posix_CommConfig.c_cflag |= CS6;
                 break;
-            case DATA_6:
+            case QextSerialPort::DATA_6:
                 Posix_CommConfig.c_cflag |= CS7;
                 break;
-            case DATA_7:
+            case QextSerialPort::DATA_7:
                 Posix_CommConfig.c_cflag |= CS8;
                 break;
-            case DATA_8:
+            case QextSerialPort::DATA_8:
                 /*this will never happen, put here to Suppress an warning*/
                 break;
             }
@@ -360,11 +354,11 @@ void QextSerialPortPrivate::updatePortSettings()
     if (settingsDirtyFlags & DFE_StopBits) {
         switch (Settings.StopBits) {
         /*one stop bit*/
-        case STOP_1:
+        case QextSerialPort::STOP_1:
             Posix_CommConfig.c_cflag &= (~CSTOPB);
             break;
         /*two stop bits*/
-        case STOP_2:
+        case QextSerialPort::STOP_2:
             Posix_CommConfig.c_cflag |= CSTOPB;
             break;
         }
@@ -372,16 +366,16 @@ void QextSerialPortPrivate::updatePortSettings()
     if (settingsDirtyFlags & DFE_Flow) {
         switch(Settings.FlowControl) {
         /*no flow control*/
-        case FLOW_OFF:
+        case QextSerialPort::FLOW_OFF:
             Posix_CommConfig.c_cflag &= (~CRTSCTS);
             Posix_CommConfig.c_iflag &= (~(IXON|IXOFF|IXANY));
             break;
         /*software (XON/XOFF) flow control*/
-        case FLOW_XONXOFF:
+        case QextSerialPort::FLOW_XONXOFF:
             Posix_CommConfig.c_cflag &= (~CRTSCTS);
             Posix_CommConfig.c_iflag |= (IXON|IXOFF|IXANY);
             break;
-        case FLOW_HARDWARE:
+        case QextSerialPort::FLOW_HARDWARE:
             Posix_CommConfig.c_cflag |= CRTSCTS;
             Posix_CommConfig.c_iflag &= (~(IXON|IXOFF|IXANY));
             break;

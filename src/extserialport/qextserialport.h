@@ -36,116 +36,6 @@
 #ifdef Q_OS_MAC
   #include <termios.h> //for B76800
 #endif
-/*line status constants*/
-// ### QESP2.0 move to enum
-#define LS_CTS  0x01
-#define LS_DSR  0x02
-#define LS_DCD  0x04
-#define LS_RI   0x08
-#define LS_RTS  0x10
-#define LS_DTR  0x20
-#define LS_ST   0x40
-#define LS_SR   0x80
-
-/*error constants*/
-// ### QESP2.0 move to enum
-#define E_NO_ERROR                   0
-#define E_INVALID_FD                 1
-#define E_NO_MEMORY                  2
-#define E_CAUGHT_NON_BLOCKED_SIGNAL  3
-#define E_PORT_TIMEOUT               4
-#define E_INVALID_DEVICE             5
-#define E_BREAK_CONDITION            6
-#define E_FRAMING_ERROR              7
-#define E_IO_ERROR                   8
-#define E_BUFFER_OVERRUN             9
-#define E_RECEIVE_OVERFLOW          10
-#define E_RECEIVE_PARITY_ERROR      11
-#define E_TRANSMIT_OVERFLOW         12
-#define E_READ_FAILED               13
-#define E_WRITE_FAILED              14
-#define E_FILE_NOT_FOUND            15
-
-enum BaudRateType
-{
-#ifdef Q_OS_UNIX
-    BAUD50 = 50,                //POSIX ONLY
-    BAUD75 = 75,                //POSIX ONLY
-    BAUD134 = 134,              //POSIX ONLY
-    BAUD150 = 150,              //POSIX ONLY
-    BAUD200 = 200,              //POSIX ONLY
-    BAUD1800 = 1800,            //POSIX ONLY
-#  ifdef B76800
-    BAUD76800 = 76800,          //POSIX ONLY
-#  endif
-#elif defined(Q_OS_WIN)
-    BAUD14400 = 14400,          //WINDOWS ONLY
-    BAUD56000 = 56000,          //WINDOWS ONLY
-    BAUD128000 = 128000,        //WINDOWS ONLY
-    BAUD256000 = 256000,        //WINDOWS ONLY
-#endif //Q_OS_UNIX
-    BAUD110 = 110,
-    BAUD300 = 300,
-    BAUD600 = 600,
-    BAUD1200 = 1200,
-    BAUD2400 = 2400,
-    BAUD4800 = 4800,
-    BAUD9600 = 9600,
-    BAUD19200 = 19200,
-    BAUD38400 = 38400,
-    BAUD57600 = 57600,
-    BAUD115200 = 115200,
-
-    BAUDCustom = 635 //magic number: 'C'+'u'+'s'+'t'+'o'+'m'
-};
-
-enum DataBitsType
-{
-    DATA_5 = 5,
-    DATA_6 = 6,
-    DATA_7 = 7,
-    DATA_8 = 8
-};
-
-enum ParityType
-{
-    PAR_NONE,
-    PAR_ODD,
-    PAR_EVEN,
-#ifdef Q_OS_WIN
-    PAR_MARK,               //WINDOWS ONLY
-#endif
-    PAR_SPACE
-};
-
-enum StopBitsType
-{
-    STOP_1,
-#ifdef Q_OS_WIN
-    STOP_1_5,               //WINDOWS ONLY
-#endif
-    STOP_2
-};
-
-enum FlowType
-{
-    FLOW_OFF,
-    FLOW_HARDWARE,
-    FLOW_XONXOFF
-};
-
-/**
- * structure to contain port settings
- */
-struct PortSettings
-{
-    BaudRateType BaudRate;
-    DataBitsType DataBits;
-    ParityType Parity;
-    StopBitsType StopBits;
-    FlowType FlowControl;
-    long Timeout_Millisec;
-};
 
 class QextSerialPortPrivate;
 class QEXTSERIALPORT_EXPORT QextSerialPort: public QIODevice
@@ -161,10 +51,111 @@ public:
         EventDriven
     };
 
-    explicit QextSerialPort(QueryMode mode = EventDriven, QObject* parent = 0);
-    explicit QextSerialPort(const QString & name, QueryMode mode = EventDriven, QObject * parent = 0);
-    explicit QextSerialPort(PortSettings const& s, QueryMode mode = EventDriven, QObject * parent = 0);
-    QextSerialPort(const QString & name, PortSettings const& s, QueryMode mode = EventDriven, QObject *parent=0);
+    enum LineID
+    {
+        LS_CTS =  0x01,
+        LS_DSR =  0x02,
+        LS_DCD =  0x04,
+        LS_RI  =  0x08,
+        LS_RTS =  0x10,
+        LS_DTR =  0x20,
+        LS_ST  =  0x40,
+        LS_SR  =  0x80
+    };
+
+    enum ErrorNumber
+    {
+        E_NO_ERROR                 =  0,
+        E_INVALID_FD               =  1,
+        E_NO_MEMORY                =  2,
+        E_CAUGHT_NON_BLOCKED_SIGNAL=  3,
+        E_PORT_TIMEOUT             =  4,
+        E_INVALID_DEVICE           =  5,
+        E_BREAK_CONDITION          =  6,
+        E_FRAMING_ERROR            =  7,
+        E_IO_ERROR                 =  8,
+        E_BUFFER_OVERRUN           =  9,
+        E_RECEIVE_OVERFLOW         = 10,
+        E_RECEIVE_PARITY_ERROR     = 11,
+        E_TRANSMIT_OVERFLOW        = 12,
+        E_READ_FAILED              = 13,
+        E_WRITE_FAILED             = 14,
+        E_FILE_NOT_FOUND           = 15
+    };
+
+    enum BaudRateType
+    {
+#if defined(Q_OS_UNIX) || defined(qdoc)
+        BAUD50 = 50,
+        BAUD75 = 75,
+        BAUD134 = 134,
+        BAUD150 = 150,
+        BAUD200 = 200,
+        BAUD1800 = 1800,
+#if defined(B76800) || defined(qdoc)
+        BAUD76800 = 76800,
+#endif
+#endif //Q_OS_UNIX
+#if defined(Q_OS_WIN) || defined(qdoc)
+        BAUD14400 = 14400,
+        BAUD56000 = 56000,
+        BAUD128000 = 128000,
+        BAUD256000 = 256000,
+#endif //Q_OS_WIN
+        BAUD110 = 110,
+        BAUD300 = 300,
+        BAUD600 = 600,
+        BAUD1200 = 1200,
+        BAUD2400 = 2400,
+        BAUD4800 = 4800,
+        BAUD9600 = 9600,
+        BAUD19200 = 19200,
+        BAUD38400 = 38400,
+        BAUD57600 = 57600,
+        BAUD115200 = 115200,
+
+        BAUDCustom = 635 //magic number: 'C'+'u'+'s'+'t'+'o'+'m'
+    };
+
+    enum DataBitsType
+    {
+        DATA_5 = 5,
+        DATA_6 = 6,
+        DATA_7 = 7,
+        DATA_8 = 8
+    };
+
+    enum ParityType
+    {
+        PAR_NONE,
+        PAR_ODD,
+        PAR_EVEN,
+#if defined(Q_OS_WIN) || defined(qdoc)
+        PAR_MARK,               //WINDOWS ONLY
+#endif
+        PAR_SPACE
+    };
+
+    enum StopBitsType
+    {
+        STOP_1,
+#if defined(Q_OS_WIN) || defined(qdoc)
+        STOP_1_5,               //WINDOWS ONLY
+#endif
+        STOP_2
+    };
+
+    enum FlowType
+    {
+        FLOW_OFF,
+        FLOW_HARDWARE,
+        FLOW_XONXOFF
+    };
+
+    explicit QextSerialPort(QObject *parent = 0);
+    explicit QextSerialPort(const QString & name, QObject * parent = 0);
+    QextSerialPort(const QString & name, BaudRateType baud, QObject * parent = 0);
+    QextSerialPort(const QString & name, BaudRateType baud, ParityType par, DataBitsType dataBits, StopBitsType stopBits, QObject *parent=0);
 
     ~QextSerialPort();
 
@@ -192,12 +183,12 @@ public:
 public Q_SLOTS:
     void setPortName(const QString & name);
     void setQueryMode(QueryMode mode);
-    void setBaudRate(BaudRateType);
-    void setDataBits(DataBitsType);
-    void setParity(ParityType);
-    void setStopBits(StopBitsType);
-    void setFlowControl(FlowType);
-    void setTimeout(long);
+    void setBaudRate(BaudRateType baudRate);
+    void setDataBits(DataBitsType dataBits);
+    void setParity(ParityType parity);
+    void setStopBits(StopBitsType stopBits);
+    void setFlowControl(FlowType flow);
+    void setTimeout(long millisec);
     void setCustomBaudRate(int baudRate);
 
     void setDtr(bool set=true);
