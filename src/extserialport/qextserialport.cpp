@@ -335,7 +335,7 @@ void QextSerialPortPrivate::_q_canRead()
     \value BAUD1800   POSIX ONLY
     \value BAUD2400
     \value BAUD4800
-    \value BAUD9600   default
+    \value BAUD9600   (default)
     \value BAUD14400  WINDOWS ONLY
     \value BAUD19200
     \value BAUD38400
@@ -354,13 +354,13 @@ void QextSerialPortPrivate::_q_canRead()
     \value DATA_5
     \value DATA_6
     \value DATA_7
-    \value DATA_8 default
+    \value DATA_8 (default)
 */
 
 /*!
     \enum QextSerialPort::ParityType
 
-    \value PAR_NONE
+    \value PAR_NONE (default)
     \value PAR_ODD
     \value PAR_EVEN
     \value PAR_MARK Windows only
@@ -370,7 +370,7 @@ void QextSerialPortPrivate::_q_canRead()
 /*!
     \enum QextSerialPort::StopBitsType
 
-    \value STOP_1
+    \value STOP_1   (default)
     \value STOP_1_5 Windows only
     \value STOP_2
 */
@@ -378,7 +378,7 @@ void QextSerialPortPrivate::_q_canRead()
 /*!
     \enum QextSerialPort::FlowType
 
-    \value FLOW_OFF            No flow control
+    \value FLOW_OFF            No flow control (default)
     \value FLOW_HARDWARE       Hardware (RTS/CTS) flow control
     \value FLOW_XONXOFF        Software (XON/XOFF) flow control
 */
@@ -403,7 +403,7 @@ void QextSerialPortPrivate::_q_canRead()
   \value Polling
      asynchronously read and write
   \value EventDriven
-     synchronously read and write
+     synchronously read and write (default)
 */
 
 /*!
@@ -607,8 +607,8 @@ void QextSerialPort::setQueryMode(QueryMode mode)
 {
     Q_D(QextSerialPort);
     QWriteLocker locker(&d->lock);
-    if (mode != d->_queryMode) {
-        d->_queryMode = mode;
+    if (mode != d->Settings.QueryMode) {
+        d->Settings.QueryMode = mode;
     }
 }
 
@@ -634,7 +634,7 @@ QString QextSerialPort::portName() const
 QextSerialPort::QueryMode QextSerialPort::queryMode() const
 {
     QReadLocker locker(&d_func()->lock);
-    return d_func()->_queryMode;
+    return d_func()->Settings.QueryMode;
 }
 
 /*!
