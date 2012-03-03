@@ -155,23 +155,15 @@ private:
 };
 
 
-class QextPortSettings
+struct PortSettings
 {
 public:
-    explicit QextPortSettings(BaudRateType b=BAUD9600
-            , DataBitsType d=DATA_8
-            , ParityType p=PAR_NONE
-            , StopBitsType s=STOP_1
-            , FlowType f=FLOW_OFF
-            , long timeout=10
-            , int customBaudRate=-1);
-    QextPortSettings(const PortSettings &);
-
-    BaudRateType BaudRate;
-    DataBitsType DataBits;
-    ParityType Parity;
-    StopBitsType StopBits;
-    FlowType FlowControl;
+    QextSerialPort::BaudRateType BaudRate;
+    QextSerialPort::DataBitsType DataBits;
+    QextSerialPort::ParityType Parity;
+    QextSerialPort::StopBitsType StopBits;
+    QextSerialPort::FlowType FlowControl;
+    QextSerialPort::QueryMode QueryMode;
     long Timeout_Millisec;
     int CustomBaudRate;
 };
@@ -199,7 +191,7 @@ public:
     };
     mutable QReadWriteLock lock;
     QString port;
-    QextPortSettings Settings;
+    PortSettings Settings;
     QextReadBuffer readBuffer;
     int settingsDirtyFlags;
     ulong lastErr;
@@ -224,14 +216,13 @@ public:
 #endif
 
     /*fill PortSettings*/
-    void setBaudRate(BaudRateType baudRate, bool update=true);
-    void setDataBits(DataBitsType dataBits, bool update=true);
-    void setParity(ParityType parity, bool update=true);
-    void setStopBits(StopBitsType stopbits, bool update=true);
-    void setFlowControl(FlowType flow, bool update=true);
+    void setBaudRate(QextSerialPort::BaudRateType baudRate, bool update=true);
+    void setDataBits(QextSerialPort::DataBitsType dataBits, bool update=true);
+    void setParity(QextSerialPort::ParityType parity, bool update=true);
+    void setStopBits(QextSerialPort::StopBitsType stopbits, bool update=true);
+    void setFlowControl(QextSerialPort::FlowType flow, bool update=true);
     void setTimeout(long millisec, bool update=true);
     void setCustomBaudRate(int customBaudRate, bool update=true);
-    void setPortSettings(const QextPortSettings& settings, bool update=true);
 
     void platformSpecificDestruct();
     void platformSpecificInit();
