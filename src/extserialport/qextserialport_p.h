@@ -166,7 +166,6 @@ public:
     QextSerialPort::FlowType FlowControl;
     QextSerialPort::QueryMode QueryMode;
     long Timeout_Millisec;
-    int CustomBaudRate;
 };
 
 class QWinEventNotifier;
@@ -222,7 +221,6 @@ public:
     void setStopBits(QextSerialPort::StopBitsType stopbits, bool update=true);
     void setFlowControl(QextSerialPort::FlowType flow, bool update=true);
     void setTimeout(long millisec, bool update=true);
-    void setCustomBaudRate(int customBaudRate, bool update=true);
 
     void platformSpecificDestruct();
     void platformSpecificInit();

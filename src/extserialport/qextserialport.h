@@ -34,8 +34,8 @@
 
 #include <QtCore/QIODevice>
 #include "qextserialport_global.h"
-#ifdef Q_OS_MAC
-  #include <termios.h> //for B76800
+#ifdef Q_OS_UNIX
+#include <termios.h>
 #endif
 
 class QextSerialPortPrivate;
@@ -81,7 +81,9 @@ public:
         E_TRANSMIT_OVERFLOW        = 12,
         E_READ_FAILED              = 13,
         E_WRITE_FAILED             = 14,
-        E_FILE_NOT_FOUND           = 15
+        E_FILE_NOT_FOUND           = 15,
+        E_PERMISSION_DENIED        = 16,
+        E_AGAIN                    = 17
     };
 
     enum BaudRateType
@@ -95,6 +97,21 @@ public:
         BAUD1800 = 1800,
 #if defined(B76800) || defined(qdoc)
         BAUD76800 = 76800,
+#endif
+#if (defined(B230400) && defined(B4000000)) || defined(qdoc)
+        BAUD230400 = 230400,
+        BAUD460800 = 460800,
+        BAUD500000 = 500000,
+        BAUD576000 = 576000,
+        BAUD921600 = 921600,
+        BAUD1000000 = 1000000,
+        BAUD1152000 = 1152000,
+        BAUD1500000 = 1500000,
+        BAUD2000000 = 2000000,
+        BAUD2500000 = 2500000,
+        BAUD3000000 = 3000000,
+        BAUD3500000 = 3500000,
+        BAUD4000000 = 4000000,
 #endif
 #endif //Q_OS_UNIX
 #if defined(Q_OS_WIN) || defined(qdoc)
@@ -113,9 +130,7 @@ public:
         BAUD19200 = 19200,
         BAUD38400 = 38400,
         BAUD57600 = 57600,
-        BAUD115200 = 115200,
-
-        BAUDCustom = 635 //magic number: 'C'+'u'+'s'+'t'+'o'+'m'
+        BAUD115200 = 115200
     };
 
     enum DataBitsType
@@ -132,7 +147,7 @@ public:
         PAR_ODD,
         PAR_EVEN,
 #if defined(Q_OS_WIN) || defined(qdoc)
-        PAR_MARK,               //WINDOWS ONLY
+        PAR_MARK,
 #endif
         PAR_SPACE
     };
@@ -141,7 +156,7 @@ public:
     {
         STOP_1,
 #if defined(Q_OS_WIN) || defined(qdoc)
-        STOP_1_5,               //WINDOWS ONLY
+        STOP_1_5,
 #endif
         STOP_2
     };
@@ -167,7 +182,6 @@ public:
     ParityType parity() const;
     StopBitsType stopBits() const;
     FlowType flowControl() const;
-    int customBaudRate() const;
 
     bool open(OpenMode mode);
     bool isSequential() const;
@@ -190,7 +204,6 @@ public Q_SLOTS:
     void setStopBits(StopBitsType stopBits);
     void setFlowControl(FlowType flow);
     void setTimeout(long millisec);
-    void setCustomBaudRate(int baudRate);
 
     void setDtr(bool set=true);
     void setRts(bool set=true);

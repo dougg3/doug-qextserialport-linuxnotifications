@@ -53,6 +53,15 @@ QextSerialEnumeratorPrivate::~QextSerialEnumeratorPrivate()
   \brief The QextPortInfo class containing port information.
 
   Structure containing port information.
+
+  \code
+  QString portName;   ///< Port name.
+  QString physName;   ///< Physical name.
+  QString friendName; ///< Friendly name.
+  QString enumName;   ///< Enumerator name.
+  int vendorID;       ///< Vendor ID.
+  int productID;      ///< Product ID
+  \endcode
  */
 
 /*! \class QextSerialEnumerator
@@ -114,7 +123,7 @@ QextSerialEnumeratorPrivate::~QextSerialEnumeratorPrivate()
 */
 
 /*!
-   Constructs a QextSerialEnumerator object with the given parent.
+   Constructs a QextSerialEnumerator object with the given \a parent.
 */
 QextSerialEnumerator::QextSerialEnumerator(QObject *parent)
     :QObject(parent), d_ptr(new QextSerialEnumeratorPrivate(this))

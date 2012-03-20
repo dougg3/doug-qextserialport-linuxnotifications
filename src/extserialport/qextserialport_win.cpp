@@ -335,10 +335,7 @@ void QextSerialPortPrivate::updatePortSettings()
 
     //fill struct : COMMCONFIG
     if (settingsDirtyFlags & DFE_BaudRate) {
-        if (Settings.BaudRate != QextSerialPort::BAUDCustom)
-            Win_CommConfig.dcb.BaudRate = Settings.BaudRate;
-        else
-            Win_CommConfig.dcb.BaudRate = Settings.CustomBaudRate;
+        Win_CommConfig.dcb.BaudRate = Settings.BaudRate;
     }
     if (settingsDirtyFlags & DFE_Parity) {
         Win_CommConfig.dcb.Parity = (BYTE)Settings.Parity;

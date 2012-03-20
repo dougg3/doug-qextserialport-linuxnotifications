@@ -91,7 +91,7 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
         }
         return true;
     } else {
-        lastErr = QextSerialPort::E_FILE_NOT_FOUND;
+        translateError(errno);
         return false;
     }
 }
@@ -131,16 +131,22 @@ qint64 QextSerialPortPrivate::bytesAvailable_sys() const
 void QextSerialPortPrivate::translateError(ulong error)
 {
     switch (error) {
-        case EBADF:
-        case ENOTTY:
-            lastErr = QextSerialPort::E_INVALID_FD;
-            break;
-        case EINTR:
-            lastErr = QextSerialPort::E_CAUGHT_NON_BLOCKED_SIGNAL;
-            break;
-        case ENOMEM:
-            lastErr = QextSerialPort::E_NO_MEMORY;
-            break;
+    case EBADF:
+    case ENOTTY:
+        lastErr = QextSerialPort::E_INVALID_FD;
+        break;
+    case EINTR:
+        lastErr = QextSerialPort::E_CAUGHT_NON_BLOCKED_SIGNAL;
+        break;
+    case ENOMEM:
+        lastErr = QextSerialPort::E_NO_MEMORY;
+        break;
+    case EACCES:
+        lastErr = QextSerialPort::E_PERMISSION_DENIED;
+        break;
+    case EAGAIN:
+        lastErr = QextSerialPort::E_AGAIN;
+        break;
     }
 }
 
@@ -292,9 +298,47 @@ void QextSerialPortPrivate::updatePortSettings()
         case QextSerialPort::BAUD115200:
             setBaudRate2Termios(&Posix_CommConfig, B115200);
             break;
-        case QextSerialPort::BAUDCustom:
-            setBaudRate2Termios(&Posix_CommConfig, Settings.CustomBaudRate);
+#if defined(B230400) && defined(B4000000)
+        case QextSerialPort::BAUD230400:
+            setBaudRate2Termios(&Posix_CommConfig, B230400);
             break;
+        case QextSerialPort::BAUD460800:
+            setBaudRate2Termios(&Posix_CommConfig, B460800);
+            break;
+        case QextSerialPort::BAUD500000:
+            setBaudRate2Termios(&Posix_CommConfig, B500000);
+            break;
+        case QextSerialPort::BAUD576000:
+            setBaudRate2Termios(&Posix_CommConfig, B576000);
+            break;
+        case QextSerialPort::BAUD921600:
+            setBaudRate2Termios(&Posix_CommConfig, B921600);
+            break;
+        case QextSerialPort::BAUD1000000:
+            setBaudRate2Termios(&Posix_CommConfig, B1000000);
+            break;
+        case QextSerialPort::BAUD1152000:
+            setBaudRate2Termios(&Posix_CommConfig, B1152000);
+            break;
+        case QextSerialPort::BAUD1500000:
+            setBaudRate2Termios(&Posix_CommConfig, B1500000);
+            break;
+        case QextSerialPort::BAUD2000000:
+            setBaudRate2Termios(&Posix_CommConfig, B2000000);
+            break;
+        case QextSerialPort::BAUD2500000:
+            setBaudRate2Termios(&Posix_CommConfig, B2500000);
+            break;
+        case QextSerialPort::BAUD3000000:
+            setBaudRate2Termios(&Posix_CommConfig, B3000000);
+            break;
+        case QextSerialPort::BAUD3500000:
+            setBaudRate2Termios(&Posix_CommConfig, B3500000);
+            break;
+        case QextSerialPort::BAUD4000000:
+            setBaudRate2Termios(&Posix_CommConfig, B4000000);
+            break;
+#endif
         }
     }
     if (settingsDirtyFlags & DFE_Parity) {

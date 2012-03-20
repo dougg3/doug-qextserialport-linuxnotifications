@@ -1,7 +1,7 @@
-QT.extserialport.VERSION = 1.9.80
-QT.extserialport.MAJOR_VERSION = 1
-QT.extserialport.MINOR_VERSION = 9
-QT.extserialport.PATCH_VERSION = 80
+QT.extserialport.VERSION = 2.0.0
+QT.extserialport.MAJOR_VERSION = 2
+QT.extserialport.MINOR_VERSION = 0
+QT.extserialport.PATCH_VERSION = 0
 
 QT.extserialport.name = QextSerialPort
 QT.extserialport.bins = $$QT_MODULE_BIN_BASE
