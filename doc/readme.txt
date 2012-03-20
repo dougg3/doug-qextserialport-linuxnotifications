@@ -14,7 +14,7 @@ Simply run following commands at toplevel directory.
     make docs
 
 Or run the following command at this directory
-    qdoc3 qextserialport.qdocconf
+    qdoc qextserialport.qdocconf
 
 Then a folder called "html" will be generated. 
 Open the file "html/index.html" using your web browser.

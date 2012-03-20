@@ -40,7 +40,7 @@
 #include <dbt.h>
 #include "qextserialport.h"
 
-#ifdef HAS_QWIDGET
+#ifdef QT_WIDGETS_LIB
 #include <QWidget>
 class QextSerialRegistrationWidget : public QWidget
 {
@@ -63,13 +63,13 @@ private:
     QextSerialEnumeratorPrivate* qese;
 };
 
-#endif // HAS_QWIDGET
+#endif // QT_WIDGETS_LIB
 
 void QextSerialEnumeratorPrivate::platformSpecificInit()
 {
-#ifdef HAS_QWIDGET
+#ifdef QT_WIDGETS_LIB
     notificationWidget = 0;
-#endif // HAS_QWIDGET
+#endif // QT_WIDGETS_LIB
 }
 
 /*!
@@ -77,7 +77,7 @@ void QextSerialEnumeratorPrivate::platformSpecificInit()
 */
 void QextSerialEnumeratorPrivate::platformSpecificDestruct()
 {
-#ifdef HAS_QWIDGET
+#ifdef QT_WIDGETS_LIB
     if( notificationWidget )
         delete notificationWidget;
 #endif
@@ -218,7 +218,7 @@ QList<QextPortInfo> QextSerialEnumeratorPrivate::getPorts_sys()
 */
 bool QextSerialEnumeratorPrivate::setUpNotifications_sys(bool setup)
 {
-#ifndef HAS_QWIDGET
+#ifndef QT_WIDGETS_LIB
     Q_UNUSED(setup)
     QESP_WARNING("QextSerialEnumerator: GUI not enabled - can't register for device notifications.");
     return false;

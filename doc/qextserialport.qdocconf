@@ -14,7 +14,7 @@ imagedirs                = ./examples/images images
 
 Cpp.ignoretokens         = QEXTSERIALPORT_EXPORT 
 
-indexes = $QTDIR/doc/html/qt.index
+#indexes = $QTDIR/doc/html/qt.index
 
 qhp.projects             = qesp
 qhp.qesp.file            = qesp.qhp
@@ -23,7 +23,6 @@ qhp.qesp.virtualFolder   = qdoc
 qhp.qesp.indexTitle      = QextSerialPort Reference Documentation
 qhp.qesp.indexRoot       = 
 qhp.qesp.extraFiles      = style/style.css
-
 
 #------------------------------------------------------------------
 outputdir = html

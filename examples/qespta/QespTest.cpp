@@ -15,15 +15,16 @@ QespTest::QespTest(QWidget* parent)
 {
 	//modify the port settings on your own
     #ifdef Q_OS_UNIX
-		port = new QextSerialPort(QLatin1String("/dev/ttyS0"), QextSerialPort::Polling);
+        port = new QextSerialPort(QLatin1String("/dev/ttyS0"));
 	#else
-		port = new QextSerialPort(QLatin1String("COM1"), QextSerialPort::Polling);
+        port = new QextSerialPort(QLatin1String("COM1"));
     #endif /*Q_OS_UNIX*/
-	port->setBaudRate(BAUD19200);
-	port->setFlowControl(FLOW_OFF);
-	port->setParity(PAR_NONE);
-	port->setDataBits(DATA_8);
-	port->setStopBits(STOP_2);
+    port->setBaudRate(QextSerialPort::BAUD19200);
+    port->setFlowControl(QextSerialPort::FLOW_OFF);
+    port->setParity(QextSerialPort::PAR_NONE);
+    port->setDataBits(QextSerialPort::DATA_8);
+    port->setStopBits(QextSerialPort::STOP_2);
+    port->setQueryMode(QextSerialPort::EventDriven);
 	//set timeouts to 500 ms
 	port->setTimeout(500);
 	

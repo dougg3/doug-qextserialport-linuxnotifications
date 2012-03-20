@@ -19,25 +19,25 @@ Dialog::Dialog(QWidget *parent) :
     //make sure user can input their own port name!
     ui->portBox->setEditable(true);
 
-    ui->baudRateBox->addItem(QLatin1String("1200"), BAUD1200);
-    ui->baudRateBox->addItem(QLatin1String("2400"), BAUD2400);
-    ui->baudRateBox->addItem(QLatin1String("4800"), BAUD4800);
-    ui->baudRateBox->addItem(QLatin1String("9600"), BAUD9600);
-    ui->baudRateBox->addItem(QLatin1String("19200"), BAUD19200);
+    ui->baudRateBox->addItem(QLatin1String("1200"), QextSerialPort::BAUD1200);
+    ui->baudRateBox->addItem(QLatin1String("2400"), QextSerialPort::BAUD2400);
+    ui->baudRateBox->addItem(QLatin1String("4800"), QextSerialPort::BAUD4800);
+    ui->baudRateBox->addItem(QLatin1String("9600"), QextSerialPort::BAUD9600);
+    ui->baudRateBox->addItem(QLatin1String("19200"), QextSerialPort::BAUD19200);
     ui->baudRateBox->setCurrentIndex(3);
 
-    ui->parityBox->addItem(QLatin1String("NONE"), PAR_NONE);
-    ui->parityBox->addItem(QLatin1String("ODD"), PAR_ODD);
-    ui->parityBox->addItem(QLatin1String("EVEN"), PAR_EVEN);
+    ui->parityBox->addItem(QLatin1String("NONE"), QextSerialPort::PAR_NONE);
+    ui->parityBox->addItem(QLatin1String("ODD"), QextSerialPort::PAR_ODD);
+    ui->parityBox->addItem(QLatin1String("EVEN"), QextSerialPort::PAR_EVEN);
 
-    ui->dataBitsBox->addItem(QLatin1String("5"), DATA_5);
-    ui->dataBitsBox->addItem(QLatin1String("6"), DATA_6);
-    ui->dataBitsBox->addItem(QLatin1String("7"), DATA_7);
-    ui->dataBitsBox->addItem(QLatin1String("8"), DATA_8);
+    ui->dataBitsBox->addItem(QLatin1String("5"), QextSerialPort::DATA_5);
+    ui->dataBitsBox->addItem(QLatin1String("6"), QextSerialPort::DATA_6);
+    ui->dataBitsBox->addItem(QLatin1String("7"), QextSerialPort::DATA_7);
+    ui->dataBitsBox->addItem(QLatin1String("8"), QextSerialPort::DATA_8);
     ui->dataBitsBox->setCurrentIndex(3);
 
-    ui->stopBitsBox->addItem(QLatin1String("1"), STOP_1);
-    ui->stopBitsBox->addItem(QLatin1String("2"), STOP_2);
+    ui->stopBitsBox->addItem(QLatin1String("1"), QextSerialPort::STOP_1);
+    ui->stopBitsBox->addItem(QLatin1String("2"), QextSerialPort::STOP_2);
 
     ui->queryModeBox->addItem(QLatin1String("Polling"), QextSerialPort::Polling);
     ui->queryModeBox->addItem(QLatin1String("EventDriven"), QextSerialPort::EventDriven);
@@ -46,8 +46,13 @@ Dialog::Dialog(QWidget *parent) :
 
     timer = new QTimer(this);
     timer->setInterval(40);
-    PortSettings settings = {BAUD9600, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10};
-    port = new QextSerialPort(ui->portBox->currentText(), settings, QextSerialPort::Polling);
+    port = new QextSerialPort(ui->portBox->currentText());
+    port->setBaudRate(QextSerialPort::BAUD9600);
+    port->setDataBits(QextSerialPort::DATA_8);
+    port->setParity(QextSerialPort::PAR_NONE);
+    port->setStopBits(QextSerialPort::STOP_1);
+    port->setFlowControl(QextSerialPort::FLOW_OFF);
+    port->setQueryMode(QextSerialPort::EventDriven);
 
     connect(ui->baudRateBox, SIGNAL(currentIndexChanged(int)), SLOT(onBaudRateChanged(int)));
     connect(ui->parityBox, SIGNAL(currentIndexChanged(int)), SLOT(onParityChanged(int)));
@@ -92,22 +97,22 @@ void Dialog::onPortNameChanged(const QString & /*name*/)
 
 void Dialog::onBaudRateChanged(int idx)
 {
-    port->setBaudRate((BaudRateType)ui->baudRateBox->itemData(idx).toInt());
+    port->setBaudRate((QextSerialPort::BaudRateType)ui->baudRateBox->itemData(idx).toInt());
 }
 
 void Dialog::onParityChanged(int idx)
 {
-    port->setParity((ParityType)ui->parityBox->itemData(idx).toInt());
+    port->setParity((QextSerialPort::ParityType)ui->parityBox->itemData(idx).toInt());
 }
 
 void Dialog::onDataBitsChanged(int idx)
 {
-    port->setDataBits((DataBitsType)ui->dataBitsBox->itemData(idx).toInt());
+    port->setDataBits((QextSerialPort::DataBitsType)ui->dataBitsBox->itemData(idx).toInt());
 }
 
 void Dialog::onStopBitsChanged(int idx)
 {
-    port->setStopBits((StopBitsType)ui->stopBitsBox->itemData(idx).toInt());
+    port->setStopBits((QextSerialPort::StopBitsType)ui->stopBitsBox->itemData(idx).toInt());
 }
 
 void Dialog::onQueryModeChanged(int idx)

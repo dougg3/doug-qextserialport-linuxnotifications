@@ -155,7 +155,19 @@ private:
     size_t basicBlockSize;
 };
 
-class QextWinEventNotifier;
+
+struct PortSettings
+{
+public:
+    QextSerialPort::BaudRateType BaudRate;
+    QextSerialPort::DataBitsType DataBits;
+    QextSerialPort::ParityType Parity;
+    QextSerialPort::StopBitsType StopBits;
+    QextSerialPort::FlowType FlowControl;
+    QextSerialPort::QueryMode QueryMode;
+    long Timeout_Millisec;
+};
+
 class QWinEventNotifier;
 class QReadWriteLock;
 class QSocketNotifier;
@@ -183,7 +195,6 @@ public:
     QextReadBuffer readBuffer;
     int settingsDirtyFlags;
     ulong lastErr;
-    QextSerialPort::QueryMode _queryMode;
 
     // platform specific members
 #ifdef Q_OS_UNIX
@@ -196,11 +207,7 @@ public:
     OVERLAPPED overlap;
     COMMCONFIG Win_CommConfig;
     COMMTIMEOUTS Win_CommTimeouts;
-#  ifndef QESP_NO_QT4_PRIVATE
     QWinEventNotifier *winEventNotifier;
-#  else
-    QextWinEventNotifier *winEventNotifier;
-#  endif
     DWORD eventMask;
     QList<OVERLAPPED*> pendingWrites;
     QReadWriteLock* bytesToWriteLock;
@@ -208,13 +215,12 @@ public:
 #endif
 
     /*fill PortSettings*/
-    void setBaudRate(BaudRateType baudRate, bool update=true);
-    void setDataBits(DataBitsType dataBits, bool update=true);
-    void setParity(ParityType parity, bool update=true);
-    void setStopBits(StopBitsType stopbits, bool update=true);
-    void setFlowControl(FlowType flow, bool update=true);
+    void setBaudRate(QextSerialPort::BaudRateType baudRate, bool update=true);
+    void setDataBits(QextSerialPort::DataBitsType dataBits, bool update=true);
+    void setParity(QextSerialPort::ParityType parity, bool update=true);
+    void setStopBits(QextSerialPort::StopBitsType stopbits, bool update=true);
+    void setFlowControl(QextSerialPort::FlowType flow, bool update=true);
     void setTimeout(long millisec, bool update=true);
-    void setPortSettings(const PortSettings& settings, bool update=true);
 
     void platformSpecificDestruct();
     void platformSpecificInit();
