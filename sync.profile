@@ -4,7 +4,7 @@
 %moduleheaders = ( # restrict the module headers to those found in relative path
 );
 %classnames = (
-    "qtextserialportversion.h" ==> "QtExtSerialPortVersion"
+    "qtextserialportversion.h" => "QtExtSerialPortVersion"
 );
 %mastercontent = (
     "core" => "#include <QtCore/QtCore>\n",
