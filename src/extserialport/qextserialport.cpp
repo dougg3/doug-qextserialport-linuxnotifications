@@ -44,7 +44,6 @@ QextSerialPortPrivate::QextSerialPortPrivate(QextSerialPort *q)
     Settings.DataBits = QextSerialPort::DATA_8;
     Settings.StopBits = QextSerialPort::STOP_1;
     Settings.FlowControl = QextSerialPort::FLOW_OFF;
-    Settings.QueryMode = QextSerialPort::EventDriven;
     Settings.Timeout_Millisec = 10;
     lastErr = QextSerialPort::E_NO_ERROR;
     settingsDirtyFlags = DFE_ALL;
@@ -406,17 +405,6 @@ void QextSerialPortPrivate::_q_canRead()
 */
 
 /*!
-  \enum QextSerialPort::QueryMode
-
-  This enum type specifies query mode used in a serial port:
-
-  \value Polling
-     asynchronously read and write
-  \value EventDriven
-     synchronously read and write (default)
-*/
-
-/*!
     \fn void QextSerialPort::dsrChanged(bool status)
     This signal is emitted whenever dsr line has changed its state. You may
     use this signal to check if device is connected.
@@ -424,11 +412,6 @@ void QextSerialPortPrivate::_q_canRead()
     \a status true when DSR signal is on, false otherwise.
  */
 
-
-/*!
-    \fn QueryMode QextSerialPort::queryMode() const
-    Get query mode.
- */
 
 /*!
     Default constructor.  Note that the name of the device used by a QextSerialPort constructed with
@@ -592,37 +575,6 @@ qint64 QextSerialPort::bytesAvailable() const
 }
 
 /*!
- * Set desired serial communication handling style. You may choose from polling
- * or event driven approach. This function does nothing when port is open; to
- * apply changes port must be reopened.
- *
- * In event driven approach read() and write() functions are acting
- * asynchronously. They return immediately and the operation is performed in
- * the background, so they doesn't freeze the calling thread.
- * To determine when operation is finished, QextSerialPort runs separate thread
- * and monitors serial port events. Whenever the event occurs, adequate signal
- * is emitted.
- *
- * When polling is set, read() and write() are acting synchronously. Signals are
- * not working in this mode and some functions may not be available. The advantage
- * of polling is that it generates less overhead due to lack of signals emissions
- * and it doesn't start separate thread to monitor events.
- *
- * Generally event driven approach is more capable and friendly, although some
- * applications may need as low overhead as possible and then polling comes.
- *
- * \a mode query mode.
- */
-void QextSerialPort::setQueryMode(QueryMode mode)
-{
-    Q_D(QextSerialPort);
-    QWriteLocker locker(&d->lock);
-    if (mode != d->Settings.QueryMode) {
-        d->Settings.QueryMode = mode;
-    }
-}
-
-/*!
     Sets the name of the device associated with the object, e.g. "COM1", or "/dev/ttyS0".
 */
 void QextSerialPort::setPortName(const QString & name)
@@ -639,12 +591,6 @@ QString QextSerialPort::portName() const
 {
     QReadLocker locker(&d_func()->lock);
     return d_func()->port;
-}
-
-QextSerialPort::QueryMode QextSerialPort::queryMode() const
-{
-    QReadLocker locker(&d_func()->lock);
-    return d_func()->Settings.QueryMode;
 }
 
 /*!

@@ -75,9 +75,7 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
     Q_Q(QextSerialPort);
     DWORD confSize = sizeof(COMMCONFIG);
     Win_CommConfig.dwSize = confSize;
-    DWORD dwFlagsAndAttributes = 0;
-    if (Settings.QueryMode == QextSerialPort::EventDriven)
-        dwFlagsAndAttributes += FILE_FLAG_OVERLAPPED;
+    DWORD dwFlagsAndAttributes = FILE_FLAG_OVERLAPPED;
 
     /*open the port*/
     Win_Handle=CreateFileW((wchar_t*)fullPortNameWin(port).utf16(), GENERIC_READ|GENERIC_WRITE,
@@ -99,16 +97,14 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
         updatePortSettings();
 
         //init event driven approach
-        if (Settings.QueryMode == QextSerialPort::EventDriven) {
-            if (!SetCommMask( Win_Handle, EV_TXEMPTY | EV_RXCHAR | EV_DSR)) {
-                QESP_WARNING()<<"failed to set Comm Mask. Error code:"<<GetLastError();
-                return false;
-            }
-            winEventNotifier = new QWinEventNotifier(overlap.hEvent);
-            qRegisterMetaType<HANDLE>("HANDLE");
-            q->connect(winEventNotifier, SIGNAL(activated(HANDLE)), q, SLOT(_q_onWinEvent(HANDLE)), Qt::DirectConnection);
-            WaitCommEvent(Win_Handle, &eventMask, &overlap);
+        if (!SetCommMask( Win_Handle, EV_TXEMPTY | EV_RXCHAR | EV_DSR)) {
+            QESP_WARNING()<<"failed to set Comm Mask. Error code:"<<GetLastError();
+            return false;
         }
+        winEventNotifier = new QWinEventNotifier(overlap.hEvent);
+        qRegisterMetaType<HANDLE>("HANDLE");
+        q->connect(winEventNotifier, SIGNAL(activated(HANDLE)), q, SLOT(_q_onWinEvent(HANDLE)), Qt::DirectConnection);
+        WaitCommEvent(Win_Handle, &eventMask, &overlap);
         return true;
     }
     return false;
@@ -193,18 +189,15 @@ qint64 QextSerialPortPrivate::readData_sys(char *data, qint64 maxSize)
 {
     DWORD bytesRead = 0;
     bool failed = false;
-    if (Settings.QueryMode == QextSerialPort::EventDriven) {
-        OVERLAPPED overlapRead;
-        ZeroMemory(&overlapRead, sizeof(OVERLAPPED));
-        if (!ReadFile(Win_Handle, (void*)data, (DWORD)maxSize, & bytesRead, & overlapRead)) {
-            if (GetLastError() == ERROR_IO_PENDING)
-                GetOverlappedResult(Win_Handle, & overlapRead, & bytesRead, true);
-            else
-                failed = true;
-        }
-    } else if (!ReadFile(Win_Handle, (void*)data, (DWORD)maxSize, & bytesRead, NULL)) {
-        failed = true;
+    OVERLAPPED overlapRead;
+    ZeroMemory(&overlapRead, sizeof(OVERLAPPED));
+    if (!ReadFile(Win_Handle, (void*)data, (DWORD)maxSize, & bytesRead, & overlapRead)) {
+        if (GetLastError() == ERROR_IO_PENDING)
+            GetOverlappedResult(Win_Handle, & overlapRead, & bytesRead, true);
+        else
+            failed = true;
     }
+
     if (!failed)
         return (qint64)bytesRead;
 
@@ -224,31 +217,27 @@ qint64 QextSerialPortPrivate::writeData_sys(const char *data, qint64 maxSize)
 {
     DWORD bytesWritten = 0;
     bool failed = false;
-    if (Settings.QueryMode == QextSerialPort::EventDriven) {
-        OVERLAPPED* newOverlapWrite = new OVERLAPPED;
-        ZeroMemory(newOverlapWrite, sizeof(OVERLAPPED));
-        newOverlapWrite->hEvent = CreateEvent(NULL, true, false, NULL);
-        if (WriteFile(Win_Handle, (void*)data, (DWORD)maxSize, & bytesWritten, newOverlapWrite)) {
-            CloseHandle(newOverlapWrite->hEvent);
-            delete newOverlapWrite;
-        }
-        else if (GetLastError() == ERROR_IO_PENDING) {
-            // writing asynchronously...not an error
-            QWriteLocker writelocker(bytesToWriteLock);
-            _bytesToWrite += maxSize;
-            pendingWrites.append(newOverlapWrite);
-        }
-        else {
-            QESP_WARNING()<<"QextSerialPort write error:"<<GetLastError();
-            failed = true;
-            if(!CancelIo(newOverlapWrite->hEvent))
-                QESP_WARNING("QextSerialPort: couldn't cancel IO");
-            if(!CloseHandle(newOverlapWrite->hEvent))
-                QESP_WARNING("QextSerialPort: couldn't close OVERLAPPED handle");
-            delete newOverlapWrite;
-        }
-    } else if (!WriteFile(Win_Handle, (void*)data, (DWORD)maxSize, & bytesWritten, NULL)) {
+    OVERLAPPED* newOverlapWrite = new OVERLAPPED;
+    ZeroMemory(newOverlapWrite, sizeof(OVERLAPPED));
+    newOverlapWrite->hEvent = CreateEvent(NULL, true, false, NULL);
+    if (WriteFile(Win_Handle, (void*)data, (DWORD)maxSize, & bytesWritten, newOverlapWrite)) {
+        CloseHandle(newOverlapWrite->hEvent);
+        delete newOverlapWrite;
+    }
+    else if (GetLastError() == ERROR_IO_PENDING) {
+        // writing asynchronously...not an error
+        QWriteLocker writelocker(bytesToWriteLock);
+        _bytesToWrite += maxSize;
+        pendingWrites.append(newOverlapWrite);
+    }
+    else {
+        QESP_WARNING()<<"QextSerialPort write error:"<<GetLastError();
         failed = true;
+        if(!CancelIo(newOverlapWrite->hEvent))
+            QESP_WARNING("QextSerialPort: couldn't cancel IO");
+        if(!CloseHandle(newOverlapWrite->hEvent))
+            QESP_WARNING("QextSerialPort: couldn't close OVERLAPPED handle");
+        delete newOverlapWrite;
     }
 
     if (!failed)
@@ -385,26 +374,17 @@ void QextSerialPortPrivate::updatePortSettings()
 
     //fill struct : COMMTIMEOUTS
     if (settingsDirtyFlags & DFE_TimeOut) {
-        if (Settings.QueryMode != QextSerialPort::EventDriven) {
-            int millisec = Settings.Timeout_Millisec;
-            if (millisec == -1) {
-                Win_CommTimeouts.ReadIntervalTimeout = MAXDWORD;
-                Win_CommTimeouts.ReadTotalTimeoutConstant = 0;
-            } else {
-                Win_CommTimeouts.ReadIntervalTimeout = millisec;
-                Win_CommTimeouts.ReadTotalTimeoutConstant = millisec;
-            }
-            Win_CommTimeouts.ReadTotalTimeoutMultiplier = 0;
-            Win_CommTimeouts.WriteTotalTimeoutMultiplier = millisec;
-            Win_CommTimeouts.WriteTotalTimeoutConstant = 0;
-        }
-        else {
+        int millisec = Settings.Timeout_Millisec;
+        if (millisec == -1) {
             Win_CommTimeouts.ReadIntervalTimeout = MAXDWORD;
-            Win_CommTimeouts.ReadTotalTimeoutMultiplier = 0;
             Win_CommTimeouts.ReadTotalTimeoutConstant = 0;
-            Win_CommTimeouts.WriteTotalTimeoutMultiplier = 0;
-            Win_CommTimeouts.WriteTotalTimeoutConstant = 0;
+        } else {
+            Win_CommTimeouts.ReadIntervalTimeout = millisec;
+            Win_CommTimeouts.ReadTotalTimeoutConstant = millisec;
         }
+        Win_CommTimeouts.ReadTotalTimeoutMultiplier = 0;
+        Win_CommTimeouts.WriteTotalTimeoutMultiplier = millisec;
+        Win_CommTimeouts.WriteTotalTimeoutConstant = 0;
     }
 
 
