@@ -1,9 +1,9 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 #include <QtCore/QStringList>
-#include <QtCore/QTimer>
 #include <QtCore/QVariant>
 #include "qextserialport.h"
+#include "qextserialhelper.h"
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
@@ -19,25 +19,15 @@ Dialog::Dialog(QWidget *parent) :
     //make sure user can input their own port name!
     ui->portBox->setEditable(true);
 
-    ui->baudRateBox->addItem(QLatin1String("1200"), QextSerialPort::BAUD1200);
-    ui->baudRateBox->addItem(QLatin1String("2400"), QextSerialPort::BAUD2400);
-    ui->baudRateBox->addItem(QLatin1String("4800"), QextSerialPort::BAUD4800);
-    ui->baudRateBox->addItem(QLatin1String("9600"), QextSerialPort::BAUD9600);
-    ui->baudRateBox->addItem(QLatin1String("19200"), QextSerialPort::BAUD19200);
+    ui->baudRateBox->addItems(QextSerialHelper::getBaudRateList());
     ui->baudRateBox->setCurrentIndex(3);
 
-    ui->parityBox->addItem(QLatin1String("NONE"), QextSerialPort::PAR_NONE);
-    ui->parityBox->addItem(QLatin1String("ODD"), QextSerialPort::PAR_ODD);
-    ui->parityBox->addItem(QLatin1String("EVEN"), QextSerialPort::PAR_EVEN);
+    ui->parityBox->addItems(QextSerialHelper::getParityList());
 
-    ui->dataBitsBox->addItem(QLatin1String("5"), QextSerialPort::DATA_5);
-    ui->dataBitsBox->addItem(QLatin1String("6"), QextSerialPort::DATA_6);
-    ui->dataBitsBox->addItem(QLatin1String("7"), QextSerialPort::DATA_7);
-    ui->dataBitsBox->addItem(QLatin1String("8"), QextSerialPort::DATA_8);
+    ui->dataBitsBox->addItems(QextSerialHelper::getDataBitsList());
     ui->dataBitsBox->setCurrentIndex(3);
 
-    ui->stopBitsBox->addItem(QLatin1String("1"), QextSerialPort::STOP_1);
-    ui->stopBitsBox->addItem(QLatin1String("2"), QextSerialPort::STOP_2);
+    ui->stopBitsBox->addItems(QextSerialHelper::getStopBitsList());
 
     ui->led->turnOff();
 
@@ -48,11 +38,11 @@ Dialog::Dialog(QWidget *parent) :
     port->setStopBits(QextSerialPort::STOP_1);
     port->setFlowControl(QextSerialPort::FLOW_OFF);
 
-    connect(ui->baudRateBox, SIGNAL(currentIndexChanged(int)), SLOT(onBaudRateChanged(int)));
-    connect(ui->parityBox, SIGNAL(currentIndexChanged(int)), SLOT(onParityChanged(int)));
-    connect(ui->dataBitsBox, SIGNAL(currentIndexChanged(int)), SLOT(onDataBitsChanged(int)));
-    connect(ui->stopBitsBox, SIGNAL(currentIndexChanged(int)), SLOT(onStopBitsChanged(int)));
-    connect(ui->timeoutBox, SIGNAL(valueChanged(int)), SLOT(onTimeoutChanged(int)));
+    connect(ui->baudRateBox, SIGNAL(currentIndexChanged(int)), SLOT(onPortSettingsChanged()));
+    connect(ui->parityBox, SIGNAL(currentIndexChanged(int)), SLOT(onPortSettingsChanged()));
+    connect(ui->dataBitsBox, SIGNAL(currentIndexChanged(int)), SLOT(onPortSettingsChanged()));
+    connect(ui->stopBitsBox, SIGNAL(currentIndexChanged(int)), SLOT(onPortSettingsChanged()));
+    connect(ui->timeoutBox, SIGNAL(valueChanged(int)), SLOT(onPortSettingsChanged()));
     connect(ui->portBox, SIGNAL(editTextChanged(QString)), SLOT(onPortNameChanged(QString)));
     connect(ui->openCloseButton, SIGNAL(clicked()), SLOT(onOpenCloseButtonClicked()));
     connect(ui->sendButton, SIGNAL(clicked()), SLOT(onSendButtonClicked()));
@@ -87,29 +77,13 @@ void Dialog::onPortNameChanged(const QString & /*name*/)
     }
 }
 
-void Dialog::onBaudRateChanged(int idx)
+void Dialog::onPortSettingsChanged()
 {
-    port->setBaudRate((QextSerialPort::BaudRateType)ui->baudRateBox->itemData(idx).toInt());
-}
-
-void Dialog::onParityChanged(int idx)
-{
-    port->setParity((QextSerialPort::ParityType)ui->parityBox->itemData(idx).toInt());
-}
-
-void Dialog::onDataBitsChanged(int idx)
-{
-    port->setDataBits((QextSerialPort::DataBitsType)ui->dataBitsBox->itemData(idx).toInt());
-}
-
-void Dialog::onStopBitsChanged(int idx)
-{
-    port->setStopBits((QextSerialPort::StopBitsType)ui->stopBitsBox->itemData(idx).toInt());
-}
-
-void Dialog::onTimeoutChanged(int val)
-{
-    port->setTimeout(val);
+    port->setBaudRate(QextSerialHelper::toBaudRateType(ui->baudRateBox->currentText()));
+    port->setParity(QextSerialHelper::toParityType(ui->parityBox->currentText()));
+    port->setDataBits(QextSerialHelper::toDataBitsType(ui->dataBitsBox->currentText()));
+    port->setStopBits(QextSerialHelper::toStopBitsType(ui->stopBitsBox->currentText()));
+    port->setTimeout(ui->timeoutBox->value());
 }
 
 void Dialog::onOpenCloseButtonClicked()
