@@ -6,7 +6,6 @@
 namespace Ui {
     class Dialog;
 }
-class QTimer;
 class QextSerialPort;
 
 class Dialog : public QDialog
@@ -26,7 +25,6 @@ private Q_SLOTS:
     void onParityChanged(int idx);
     void onDataBitsChanged(int idx);
     void onStopBitsChanged(int idx);
-    void onQueryModeChanged(int idx);
     void onTimeoutChanged(int val);
     void onOpenCloseButtonClicked();
     void onSendButtonClicked();
@@ -34,7 +32,6 @@ private Q_SLOTS:
 
 private:
     Ui::Dialog *ui;
-    QTimer *timer;
     QextSerialPort *port;
 };
 

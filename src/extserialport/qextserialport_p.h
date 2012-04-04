@@ -164,7 +164,6 @@ public:
     QextSerialPort::ParityType Parity;
     QextSerialPort::StopBitsType StopBits;
     QextSerialPort::FlowType FlowControl;
-    QextSerialPort::QueryMode QueryMode;
     long Timeout_Millisec;
 };
 

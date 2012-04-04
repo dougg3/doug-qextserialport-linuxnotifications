@@ -43,15 +43,19 @@ class QEXTSERIALPORT_EXPORT QextSerialPort: public QIODevice
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QextSerialPort)
-    Q_ENUMS(QueryMode)
+    Q_ENUMS(BaudRateType)
+    Q_ENUMS(ParityType)
+    Q_ENUMS(DataBitsType)
+    Q_ENUMS(StopBitsType)
+    Q_ENUMS(FlowType)
     Q_PROPERTY(QString portName READ portName WRITE setPortName)
-    Q_PROPERTY(QueryMode queryMode READ queryMode WRITE setQueryMode)
-public:
-    enum QueryMode {
-        Polling,
-        EventDriven
-    };
+    Q_PROPERTY(BaudRateType baudRate READ baudRate WRITE setBaudRate)
+    Q_PROPERTY(DataBitsType dataBits READ dataBits WRITE setDataBits)
+    Q_PROPERTY(ParityType parity READ parity WRITE setParity)
+    Q_PROPERTY(StopBitsType stopBits READ stopBits WRITE setStopBits)
+    Q_PROPERTY(FlowType flowControl READ flowControl WRITE setFlowControl)
 
+public:
     enum LineID
     {
         LS_CTS =  0x01,
@@ -176,7 +180,6 @@ public:
     ~QextSerialPort();
 
     QString portName() const;
-    QueryMode queryMode() const;
     BaudRateType baudRate() const;
     DataBitsType dataBits() const;
     ParityType parity() const;
@@ -197,7 +200,6 @@ public:
 
 public Q_SLOTS:
     void setPortName(const QString & name);
-    void setQueryMode(QueryMode mode);
     void setBaudRate(BaudRateType baudRate);
     void setDataBits(DataBitsType dataBits);
     void setParity(ParityType parity);
