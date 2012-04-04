@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
 CONFIG+=ordered
-SUBDIRS += extserialport
+SUBDIRS += extserialport imports
