@@ -1,5 +1,7 @@
 TEMPLATE = subdirs
-SUBDIRS = qespta enumerator \
-    uartassistant
+SUBDIRS = enumerator \
+    uartassistant \
+    qesp_quick \
+
 win32:SUBDIRS += event
 
