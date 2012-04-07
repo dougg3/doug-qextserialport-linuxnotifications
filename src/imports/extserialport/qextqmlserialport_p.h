@@ -40,6 +40,7 @@ class QextQmlSerialPort : public QObject, public QQmlParserStatus
     Q_PROPERTY(bool connected READ connected WRITE setConnected NOTIFY connectedChanged)
     Q_PROPERTY(QString stringData READ stringData WRITE sendStringData NOTIFY dataAvailable)
     Q_PROPERTY(QString stringCodec READ stringCodec WRITE setStringCodec)
+    Q_PROPERTY(QString portName READ portName WRITE setPortName)
     Q_PROPERTY(QString baudRate READ baudRate WRITE setBaudRate)
     Q_PROPERTY(QString dataBits READ dataBits WRITE setDataBits)
     Q_PROPERTY(QString parity READ parity WRITE setParity)
@@ -57,6 +58,7 @@ public:
     bool connected();
     QString stringData();
     QString stringCodec();
+    QString portName();
     QString baudRate();
     QString dataBits();
     QString parity();
@@ -71,6 +73,7 @@ public Q_SLOTS:
     void setConnected(bool connect);
     void sendStringData(QString data);
     void setStringCodec(QString codec);
+    void setPortName(QString portName);
     void setBaudRate(QString baudrate);
     void setDataBits(QString databits);
     void setParity(QString parity);
