@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qesp_quick.qml</file>
+    </qresource>
+</RCC>
