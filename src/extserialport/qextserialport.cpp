@@ -222,7 +222,7 @@ void QextSerialPortPrivate::setStopBits(QextSerialPort::StopBitsType stopBits, b
         /*1.5 stop bits*/
     case QextSerialPort::STOP_1_5:
         QESP_PORTABILITY_WARNING("QextSerialPort Portability Warning: 1.5 stop bit operation is not supported by POSIX.");
-        if (Settings.DataBits!=DATA_5) {
+        if (Settings.DataBits!=QextSerialPort::DATA_5) {
             QESP_WARNING("QextSerialPort: 1.5 stop bits can only be used with 5 data bits");
         }
         else {
