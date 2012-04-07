@@ -33,10 +33,24 @@ class QextQmlSerialPortPrivate
     Q_DECLARE_PUBLIC(QextQmlSerialPort)
 public:
     QextQmlSerialPortPrivate(QextQmlSerialPort *q)
-        :q_ptr(q)
+        :componentComplete(false), needConnect(false), q_ptr(q)
     {
     }
 
+    void doConnect(bool connect)
+    {
+        if (connect && !port->isOpen()) {
+            port->open(QIODevice::ReadWrite);
+            if (port->isOpen())
+                Q_EMIT q_ptr->connectedChanged();
+        } else if (!connect && port->isOpen()) {
+            port->close();
+            Q_EMIT q_ptr->connectedChanged();
+        }
+    }
+
+    bool componentComplete;
+    bool needConnect; //before componentComplete
     QextSerialPort * port;
     QextQmlSerialPort * q_ptr;
 };
@@ -62,6 +76,8 @@ QextQmlSerialPort::~QextQmlSerialPort()
 
 void QextQmlSerialPort::componentComplete()
 {
+    d_ptr->componentComplete = true;
+    d_ptr->doConnect(d_ptr->needConnect);
 }
 
 /*!
@@ -101,6 +117,17 @@ QString QextQmlSerialPort::stringCodec()
 {
     return QString::fromLatin1("latin1");
 }
+
+/*!
+  \qmlproperty string ExtSerialPort::portName
+
+   Gets and sets the baudRate associated with the serial port
+*/
+QString QextQmlSerialPort::portName()
+{
+    return d_ptr->port->portName();
+}
+
 
 /*!
   \qmlproperty string ExtSerialPort::baudRate
@@ -154,10 +181,12 @@ QString QextQmlSerialPort::flowControl()
 
 void QextQmlSerialPort::setConnected(bool connect)
 {
-    if (connect)
-        d_ptr->port->open(QIODevice::ReadWrite);
-    else
-        d_ptr->port->close();
+    if (d_ptr->componentComplete) {
+        d_ptr->doConnect(connect);
+    } else {
+        //delay the operation
+        d_ptr->needConnect = connect;
+    }
 }
 
 void QextQmlSerialPort::sendStringData(QString data)
@@ -168,6 +197,11 @@ void QextQmlSerialPort::sendStringData(QString data)
 void QextQmlSerialPort::setStringCodec(QString /*codec*/)
 {
 
+}
+
+void QextQmlSerialPort::setPortName(QString portName)
+{
+    d_ptr->port->setPortName(portName);
 }
 
 void QextQmlSerialPort::setBaudRate(QString baudrate)
