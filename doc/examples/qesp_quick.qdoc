@@ -1,0 +1,7 @@
+/*!
+    \example examples/qesp_quick
+    \title QtExtSerialPort QML-Api Demo
+
+    The example demonstrates how to use ExtSerialPort.
+*/
+
