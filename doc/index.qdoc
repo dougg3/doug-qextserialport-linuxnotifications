@@ -18,6 +18,7 @@
       \list
       \li \l QextSerialPort encapsulates a serial port on both POSIX and Windows systems.
       \li \l QextSerialEnumerator enumerates ports currently available in the system.
+      \li \l ExtSerialPort qml api of QextSeralPort.
       \endlist
     
     \section1 Usage
