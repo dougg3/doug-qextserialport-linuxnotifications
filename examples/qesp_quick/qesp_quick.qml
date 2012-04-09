@@ -33,9 +33,9 @@ Item {
     {
         id: port
         // portName: "COM3"
-        baudRate: "BAUD19200"
-        parity: "PAR_EVEN"
-        dataBits: "DATA_6"
+        baudRate: 19200
+        parity: ExtSerialPort.PAR_EVEN
+        dataBits: ExtSerialPort.DATA_6
         connected: true
 
         onDataAvailable: recvText.text = recvText.text + port.stringData
