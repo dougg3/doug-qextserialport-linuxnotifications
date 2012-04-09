@@ -574,6 +574,15 @@ qint64 QextSerialPort::bytesAvailable() const
     return 0;
 }
 
+/*! \reimp
+
+*/
+bool QextSerialPort::canReadLine() const
+{
+    QReadLocker locker(&d_func()->lock);
+    return QIODevice::canReadLine() || d_func()->readBuffer.canReadLine();
+}
+
 /*!
     Sets the name of the device associated with the object, e.g. "COM1", or "/dev/ttyS0".
 */
