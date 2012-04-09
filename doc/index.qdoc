@@ -62,8 +62,8 @@
     \section1 Examples
       \list
       \li \l examples/enumerator
-      \li \l examples/qespta
       \li \l examples/uartassistant
+      \li \l examples/qesp_quick
       \endlist
 
     \section1 Resources
