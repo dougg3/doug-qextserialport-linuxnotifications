@@ -59,6 +59,21 @@ public:
    \qmlclass ExtSerialPort QextQmlSerialPort
    \brief Enables you to connect and communicate with a serial port.
 
+   \qml
+    import QtExtSerialPort 2.0
+
+    ExtSerialPort
+    {
+        id: port
+        portName: "COM22"
+        baudRate: 19200
+        parity: ExtSerialPort.PAR_EVEN
+        dataBits: ExtSerialPort.DATA_6
+        connected: true
+        //shown data in TextEdit
+        onDataAvailable: recvText.text = port.stringData
+    }
+   \endqml
    \sa QextSerialPort
 */
 QextQmlSerialPort::QextQmlSerialPort(QObject *parent) :
