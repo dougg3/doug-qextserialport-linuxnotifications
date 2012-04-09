@@ -37,17 +37,57 @@ class QextQmlSerialPort : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
+    Q_ENUMS(DataBitsType)
+    Q_ENUMS(ParityType)
+    Q_ENUMS(StopBitsType)
+    Q_ENUMS(FlowType)
     Q_PROPERTY(bool connected READ connected WRITE setConnected NOTIFY connectedChanged)
     Q_PROPERTY(QString stringData READ stringData WRITE sendStringData NOTIFY dataAvailable)
     Q_PROPERTY(QString stringCodec READ stringCodec WRITE setStringCodec)
     Q_PROPERTY(QString portName READ portName WRITE setPortName)
-    Q_PROPERTY(QString baudRate READ baudRate WRITE setBaudRate)
-    Q_PROPERTY(QString dataBits READ dataBits WRITE setDataBits)
-    Q_PROPERTY(QString parity READ parity WRITE setParity)
-    Q_PROPERTY(QString stopBits READ stopBits WRITE setStopBits)
-    Q_PROPERTY(QString flowControl READ flowControl WRITE setFlowControl)
+    Q_PROPERTY(int baudRate READ baudRate WRITE setBaudRate)
+    Q_PROPERTY(DataBitsType dataBits READ dataBits WRITE setDataBits)
+    Q_PROPERTY(ParityType parity READ parity WRITE setParity)
+    Q_PROPERTY(StopBitsType stopBits READ stopBits WRITE setStopBits)
+    Q_PROPERTY(FlowType flowControl READ flowControl WRITE setFlowControl)
 
 public:
+
+    enum DataBitsType
+    {
+        DATA_5 = 5,
+        DATA_6 = 6,
+        DATA_7 = 7,
+        DATA_8 = 8
+    };
+
+    enum ParityType
+    {
+        PAR_NONE,
+        PAR_ODD,
+        PAR_EVEN,
+#if defined(Q_OS_WIN) || defined(qdoc)
+        PAR_MARK,
+#endif
+        PAR_SPACE
+    };
+
+    enum StopBitsType
+    {
+        STOP_1,
+#if defined(Q_OS_WIN) || defined(qdoc)
+        STOP_1_5,
+#endif
+        STOP_2
+    };
+
+    enum FlowType
+    {
+        FLOW_OFF,
+        FLOW_HARDWARE,
+        FLOW_XONXOFF
+    };
+
     explicit QextQmlSerialPort(QObject *parent = 0);
     ~QextQmlSerialPort();
     
@@ -59,11 +99,11 @@ public:
     QString stringData();
     QString stringCodec();
     QString portName();
-    QString baudRate();
-    QString dataBits();
-    QString parity();
-    QString stopBits();
-    QString flowControl();
+    int baudRate();
+    DataBitsType dataBits();
+    ParityType parity();
+    StopBitsType stopBits();
+    FlowType flowControl();
 
 Q_SIGNALS:
     void connectedChanged();
@@ -74,11 +114,11 @@ public Q_SLOTS:
     void sendStringData(QString data);
     void setStringCodec(QString codec);
     void setPortName(QString portName);
-    void setBaudRate(QString baudrate);
-    void setDataBits(QString databits);
-    void setParity(QString parity);
-    void setStopBits(QString stopbits);
-    void setFlowControl(QString flow);
+    void setBaudRate(int baudrate);
+    void setDataBits(DataBitsType databits);
+    void setParity(ParityType parity);
+    void setStopBits(StopBitsType stopbits);
+    void setFlowControl(FlowType flow);
 
 private:
     Q_DECLARE_PRIVATE(QextQmlSerialPort)

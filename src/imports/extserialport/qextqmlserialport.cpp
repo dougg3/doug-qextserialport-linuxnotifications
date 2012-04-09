@@ -74,6 +74,9 @@ QextQmlSerialPort::~QextQmlSerialPort()
     delete d_ptr->port;
 }
 
+/*!
+  \internal
+*/
 void QextQmlSerialPort::componentComplete()
 {
     d_ptr->componentComplete = true;
@@ -89,6 +92,16 @@ void QextQmlSerialPort::componentComplete()
 bool QextQmlSerialPort::connected()
 {
     return d_ptr->port->isOpen();
+}
+
+void QextQmlSerialPort::setConnected(bool connect)
+{
+    if (d_ptr->componentComplete) {
+        d_ptr->doConnect(connect);
+    } else {
+        //delay the operation
+        d_ptr->needConnect = connect;
+    }
 }
 
 /*!
@@ -107,6 +120,11 @@ QString QextQmlSerialPort::stringData()
     }
 }
 
+void QextQmlSerialPort::sendStringData(QString data)
+{
+    d_ptr->port->write(data.toLatin1());
+}
+
 /*!
   \qmlproperty string ExtSerialPort::stringCodec
 
@@ -118,85 +136,19 @@ QString QextQmlSerialPort::stringCodec()
     return QString::fromLatin1("latin1");
 }
 
+void QextQmlSerialPort::setStringCodec(QString /*codec*/)
+{
+
+}
+
 /*!
   \qmlproperty string ExtSerialPort::portName
 
-   Gets and sets the baudRate associated with the serial port
+   Gets and sets the port name associated with the serial port
 */
 QString QextQmlSerialPort::portName()
 {
     return d_ptr->port->portName();
-}
-
-
-/*!
-  \qmlproperty string ExtSerialPort::baudRate
-
-   Gets and sets the baudRate associated with the serial port
-*/
-QString QextQmlSerialPort::baudRate()
-{
-    return QextSerialHelper::fromBaudRateType(d_ptr->port->baudRate());
-}
-
-/*!
-  \qmlproperty string ExtSerialPort::dataBits
-
-   Gets and sets the dataBits associated with the serial port
-*/
-QString QextQmlSerialPort::dataBits()
-{
-    return QextSerialHelper::fromDataBitsType(d_ptr->port->dataBits());
-}
-
-/*!
-  \qmlproperty string ExtSerialPort::parity
-
-   Gets and sets the parity associated with the serial port
-*/
-QString QextQmlSerialPort::parity()
-{
-    return QextSerialHelper::fromParityType(d_ptr->port->parity());
-}
-
-/*!
-  \qmlproperty string ExtSerialPort::stopBits
-
-   Gets and sets the stopBits associated with the serial port
-*/
-QString QextQmlSerialPort::stopBits()
-{
-    return QextSerialHelper::fromStopBitsType(d_ptr->port->stopBits());
-}
-
-/*!
-  \qmlproperty string ExtSerialPort::flowControl
-
-   Gets and sets the flowControl associated with the serial port
-*/
-QString QextQmlSerialPort::flowControl()
-{
-    return QextSerialHelper::fromFlowType(d_ptr->port->flowControl());
-}
-
-void QextQmlSerialPort::setConnected(bool connect)
-{
-    if (d_ptr->componentComplete) {
-        d_ptr->doConnect(connect);
-    } else {
-        //delay the operation
-        d_ptr->needConnect = connect;
-    }
-}
-
-void QextQmlSerialPort::sendStringData(QString data)
-{
-    d_ptr->port->write(data.toLatin1());
-}
-
-void QextQmlSerialPort::setStringCodec(QString /*codec*/)
-{
-
 }
 
 void QextQmlSerialPort::setPortName(QString portName)
@@ -204,27 +156,104 @@ void QextQmlSerialPort::setPortName(QString portName)
     d_ptr->port->setPortName(portName);
 }
 
-void QextQmlSerialPort::setBaudRate(QString baudrate)
+
+/*!
+  \qmlproperty int ExtSerialPort::baudRate
+
+   Gets and sets the baudRate associated with the serial port
+*/
+int QextQmlSerialPort::baudRate()
 {
-    d_ptr->port->setBaudRate(QextSerialHelper::toBaudRateType(baudrate));
+    return static_cast<int>(d_ptr->port->baudRate());
 }
 
-void QextQmlSerialPort::setDataBits(QString databits)
+void QextQmlSerialPort::setBaudRate(int baudrate)
 {
-    d_ptr->port->setDataBits(QextSerialHelper::toDataBitsType(databits));
+    d_ptr->port->setBaudRate(static_cast<QextSerialPort::BaudRateType>(baudrate));
 }
 
-void QextQmlSerialPort::setParity(QString parity)
+/*!
+  \qmlproperty ExtSerialPort::DataBitsType ExtSerialPort::dataBits
+
+   Gets and sets the dataBits associated with the serial port
+
+   \list
+   \li ExtSerialPort.DATA_8
+   \li ExtSerialPort.DATA_7
+   \li ExtSerialPort.DATA_6
+   \li ExtSerialPort.DATA_5
+   \endlist
+*/
+QextQmlSerialPort::DataBitsType QextQmlSerialPort::dataBits()
 {
-    d_ptr->port->setParity(QextSerialHelper::toParityType(parity));
+    return static_cast<QextQmlSerialPort::DataBitsType>(d_ptr->port->dataBits());
 }
 
-void QextQmlSerialPort::setStopBits(QString stopbits)
+void QextQmlSerialPort::setDataBits(QextQmlSerialPort::DataBitsType databits)
 {
-    d_ptr->port->setStopBits(QextSerialHelper::toStopBitsType(stopbits));
+    d_ptr->port->setDataBits(static_cast<QextSerialPort::DataBitsType>(databits));
 }
 
-void QextQmlSerialPort::setFlowControl(QString flow)
+/*!
+  \qmlproperty ExtSerialPort::ParityType ExtSerialPort::parity
+
+   Gets and sets the parity associated with the serial port
+
+   \list
+   \li ExtSerialPort.PAR_NONE - (default)
+   \li ExtSerialPort.PAR_ODD
+   \li ExtSerialPort.PAR_EVEN
+   \li ExtSerialPort.PAR_MARK - Windows only
+   \li ExtSerialPort.PAR_SPACE
+   \endlist
+*/
+QextQmlSerialPort::ParityType QextQmlSerialPort::parity()
 {
-    d_ptr->port->setFlowControl(QextSerialHelper::toFlowType(flow));
+    return static_cast<QextQmlSerialPort::ParityType>(d_ptr->port->parity());
+}
+
+void QextQmlSerialPort::setParity(QextQmlSerialPort::ParityType parity)
+{
+    d_ptr->port->setParity(static_cast<QextSerialPort::ParityType>(parity));
+}
+
+/*!
+  \qmlproperty ExtSerialPort::StopBitsType ExtSerialPort::stopBits
+
+   Gets and sets the stopBits associated with the serial port
+   \list
+   \li ExtSerialPort.STOP_1   - (default)
+   \li ExtSerialPort.STOP_1_5 - Windows only
+   \li ExtSerialPort.STOP_2
+   \endlist
+*/
+QextQmlSerialPort::StopBitsType QextQmlSerialPort::stopBits()
+{
+    return static_cast<QextQmlSerialPort::StopBitsType>(d_ptr->port->stopBits());
+}
+
+void QextQmlSerialPort::setStopBits(QextQmlSerialPort::StopBitsType stopbits)
+{
+    d_ptr->port->setStopBits(static_cast<QextSerialPort::StopBitsType>(stopbits));
+}
+
+/*!
+  \qmlproperty ExtSerialPort::FlowType ExtSerialPort::flowControl
+
+   Gets and sets the flowControl associated with the serial port
+
+   \list
+   \li ExtSerialPort.FLOW_OFF        -   No flow control (default)
+   \li ExtSerialPort.FLOW_HARDWARE   -   Hardware (RTS/CTS) flow control
+   \li ExtSerialPort.FLOW_XONXOFF    -   Software (XON/XOFF) flow control
+   \endlist
+*/
+QextQmlSerialPort::FlowType QextQmlSerialPort::flowControl()
+{
+    return static_cast<QextQmlSerialPort::FlowType>(d_ptr->port->flowControl());
+}
+
+void QextQmlSerialPort::setFlowControl(QextQmlSerialPort::FlowType flow)
+{
+    d_ptr->port->setFlowControl(static_cast<QextSerialPort::FlowType>(flow));
 }
