@@ -288,7 +288,7 @@ void QextSerialPortPrivate::_q_canRead()
     is typically easier to use, since you never have to worry about checking
     for new data.
 
-    \bold Example
+    \b Example
     \code
     QextSerialPort* port = new QextSerialPort("COM1", QextSerialPort::EventDriven);
     connect(port, SIGNAL(readyRead()), myClass, SLOT(onDataAvailable()));
@@ -312,7 +312,7 @@ void QextSerialPortPrivate::_q_canRead()
     by default - this behavior can be turned off by defining QESP_NO_WARN
     (to turn off all warnings) or QESP_NO_PORTABILITY_WARN (to turn off portability warnings) in the project.
 
-    \bold Author: Stefan Sander, Michal Policht, Brandon Fosdick, Liam Staskawicz, Debao Zhang
+    \b Author: Stefan Sander, Michal Policht, Brandon Fosdick, Liam Staskawicz, Debao Zhang
 */
 
 /*!
@@ -773,12 +773,12 @@ void QextSerialPort::setParity(ParityType parity)
 /*!
     Sets the number of data bits used by the serial port to \a dataBits.  Possible values of dataBits are:
 
-    \bold note:
+    \b note:
     This function is subject to the following restrictions:
     \list
-    \o 5 data bits cannot be used with 2 stop bits.
-    \o 1.5 stop bits can only be used with 5 data bits.
-    \o 8 data bits cannot be used with space parity on POSIX systems.
+    \li 5 data bits cannot be used with 2 stop bits.
+    \li 1.5 stop bits can only be used with 5 data bits.
+    \li 8 data bits cannot be used with space parity on POSIX systems.
     \endlist
     */
 void QextSerialPort::setDataBits(DataBitsType dataBits)
@@ -792,12 +792,12 @@ void QextSerialPort::setDataBits(DataBitsType dataBits)
 /*!
     Sets the number of stop bits used by the serial port to \a stopBits.  Possible values of stopBits are:
 
-    \bold note:
+    \b note:
     This function is subject to the following restrictions:
     \list
-    \o 2 stop bits cannot be used with 5 data bits.
-    \o 1.5 stop bits cannot be used with 6 or more data bits.
-    \o POSIX does not support 1.5 stop bits.
+    \li 2 stop bits cannot be used with 5 data bits.
+    \li 1.5 stop bits cannot be used with 6 or more data bits.
+    \li POSIX does not support 1.5 stop bits.
     \endlist
 */
 void QextSerialPort::setStopBits(StopBitsType stopBits)
@@ -833,7 +833,7 @@ void QextSerialPort::setBaudRate(BaudRateType baudRate)
     individual character, not for the whole read operation.  This timeout also applies to the
     bytesWaiting() function.
 
-    \bold note:
+    \b note:
     POSIX does not support millisecond-level control for I/O timeout values.  Any
     timeout set using this function will be set to the next lowest tenth of a second for
     the purposes of detecting read or write timeouts.  For example a timeout of 550 milliseconds
@@ -849,7 +849,7 @@ void QextSerialPort::setBaudRate(BaudRateType baudRate)
     however read() and write() functions will still block. Set -1 to provide
     non-blocking behaviour (read() and write() will return immediately).
 
-    \bold note: this function does nothing in event driven mode.
+    \b note: this function does nothing in event driven mode.
 */
 void QextSerialPort::setTimeout(long millisec)
 {

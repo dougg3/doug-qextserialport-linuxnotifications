@@ -72,7 +72,7 @@ QextSerialEnumeratorPrivate::~QextSerialEnumeratorPrivate()
     To poll the system for a list of connected devices, simply use getPorts().  Each
     QextPortInfo structure will populated with information about the corresponding device.
   
-    \bold Example
+    \b Example
     \code
     QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
     foreach( QextPortInfo port, ports ) {
@@ -84,7 +84,7 @@ QextSerialEnumeratorPrivate::~QextSerialEnumeratorPrivate()
     setUpNotifications() and then connect to the deviceDiscovered() and deviceRemoved()
     signals.  Event-driven behavior is currently available only on Windows and OS X.
   
-    \bold Example
+    \b Example
     \code
     QextSerialEnumerator* enumerator = new QextSerialEnumerator();
     connect(enumerator, SIGNAL(deviceDiscovered(const QextPortInfo &)),
@@ -99,7 +99,7 @@ QextSerialEnumeratorPrivate::~QextSerialEnumeratorPrivate()
   
     OS X implementation, see \l http://developer.apple.com/documentation/DeviceDrivers/Conceptual/AccessingHardware/AH_Finding_Devices/chapter_4_section_2.html
   
-    \bold author Michal Policht, Liam Staskawicz
+    \b author Michal Policht, Liam Staskawicz
 */
 
 /*!
