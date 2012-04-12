@@ -27,6 +27,9 @@
 #include "qextqmlserialport_p.h"
 #include "qextserialport.h"
 #include "qextserialhelper.h"
+#include <QtCore/QTextCodec>
+#include <QtCore/QTextDecoder>
+#include <QtCore/QTextEncoder>
 
 class QextQmlSerialPortPrivate
 {
@@ -34,7 +37,16 @@ class QextQmlSerialPortPrivate
 public:
     QextQmlSerialPortPrivate(QextQmlSerialPort *q)
         :componentComplete(false), needConnect(false), q_ptr(q)
+        ,codec(0), encoder(0), decoder(0)
     {
+    }
+
+    ~QextQmlSerialPortPrivate()
+    {
+        if (codec) {
+            delete encoder;
+            delete decoder;
+        }
     }
 
     void doConnect(bool connect)
@@ -49,10 +61,29 @@ public:
         }
     }
 
+    void setCodec(QTextCodec * textCodec)
+    {
+        if (textCodec == codec)
+            return;
+        if (codec) {
+            delete encoder;
+            delete decoder;
+        }
+        codec = textCodec;
+        if (codec) {
+            encoder = codec->makeEncoder();
+            decoder = codec->makeDecoder();
+        }
+    }
+
     bool componentComplete;
     bool needConnect; //before componentComplete
     QextSerialPort * port;
     QextQmlSerialPort * q_ptr;
+
+    QTextCodec * codec;
+    QTextEncoder * encoder;
+    QTextDecoder * decoder;
 };
 
 /*!
@@ -129,7 +160,11 @@ void QextQmlSerialPort::setConnected(bool connect)
 QString QextQmlSerialPort::stringData()
 {
     if (d_ptr->port->isOpen() && d_ptr->port->bytesAvailable() > 0) {
-        return QString::fromLatin1(d_ptr->port->readAll());
+        QByteArray bytes = d_ptr->port->readAll();
+        if (d_ptr->codec)
+            return d_ptr->decoder->toUnicode(bytes);
+        else
+            return QString::fromLatin1(bytes);
     } else {
         return QString();
     }
@@ -137,7 +172,10 @@ QString QextQmlSerialPort::stringData()
 
 void QextQmlSerialPort::sendStringData(QString data)
 {
-    d_ptr->port->write(data.toLatin1());
+    if (d_ptr->codec)
+        d_ptr->port->write(d_ptr->encoder->fromUnicode(data));
+    else
+        d_ptr->port->write(data.toLatin1());
 }
 
 /*!
@@ -148,12 +186,18 @@ void QextQmlSerialPort::sendStringData(QString data)
 */
 QString QextQmlSerialPort::stringCodec()
 {
-    return QString::fromLatin1("latin1");
+    if (!d_ptr->codec)
+        return QStringLiteral("latin1");
+    return QString::fromLatin1(d_ptr->codec->name());
 }
 
-void QextQmlSerialPort::setStringCodec(QString /*codec*/)
+void QextQmlSerialPort::setStringCodec(QString name)
 {
-
+    QTextCodec *codec = QTextCodec::codecForName(name.toLatin1());
+    if (codec)
+        d_ptr->setCodec(codec);
+    else
+        QESP_WARNING()<<"Invalid StringCodec Name: "<<name;
 }
 
 /*!
