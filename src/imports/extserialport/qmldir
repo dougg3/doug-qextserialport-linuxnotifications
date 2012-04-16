@@ -1,1 +1,2 @@
 plugin qml_extserialport
+typeinfo plugins.qmltypes
