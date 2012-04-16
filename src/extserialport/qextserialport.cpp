@@ -294,23 +294,26 @@ void QextSerialPortPrivate::_q_canRead()
     connect(port, SIGNAL(readyRead()), myClass, SLOT(onDataAvailable()));
     port->open();
 
-    void MyClass::onDataAvailable() {
-        int avail = port->bytesAvailable();
-        if( avail > 0 ) {
-            QByteArray usbdata;
-            usbdata.resize(avail);
-            int read = port->read(usbdata.data(), usbdata.size());
-            if( read > 0 ) {
-                processNewData(usbdata);
-            }
-        }
+    void MyClass::onDataAvailable()
+    {
+        QByteArray data = port->readAll();
+        processNewData(usbdata);
     }
     \endcode
 
     \section1 Compatibility
     The user will be notified of errors and possible portability conflicts at run-time
-    by default - this behavior can be turned off by defining QESP_NO_WARN
-    (to turn off all warnings) or QESP_NO_PORTABILITY_WARN (to turn off portability warnings) in the project.
+    by default.
+
+    For example, if a application has used BAUD1800, when it is runing under unix, you
+    will get following message.
+
+    \code
+    QextSerialPort Portability Warning: Windows does not support baudRate:1800
+    \endcode
+
+    This behavior can be turned off by defining macro QESP_NO_WARN (to turn off all warnings)
+    or QESP_NO_PORTABILITY_WARN (to turn off portability warnings) in the project.
 
     \b Author: Stefan Sander, Michal Policht, Brandon Fosdick, Liam Staskawicz, Debao Zhang
 */
@@ -664,6 +667,7 @@ QextSerialPort::FlowType QextSerialPort::flowControl() const
 }
 
 /*!
+    \reimp
     Returns true if device is sequential, otherwise returns false. Serial port is sequential device
     so this function always returns true. Check QIODevice::isSequential() documentation for more
     information.
@@ -673,6 +677,9 @@ bool QextSerialPort::isSequential() const
     return true;
 }
 
+/*!
+    Return the error number, or 0 if no error occurred.
+*/
 ulong QextSerialPort::lastError() const
 {
     QReadLocker locker(&d_func()->lock);

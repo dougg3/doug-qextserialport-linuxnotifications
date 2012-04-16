@@ -11,10 +11,11 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //! [0]
 #ifdef Q_OS_WIN
-    ui->portBox->addItems(QStringList()<<QLatin1String("COM1")<<QLatin1String("COM2")<<QLatin1String("COM3")<<QLatin1String("COM4"));
+    ui->portBox->addItems(QStringList()<<"COM1"<<"COM2"<<"COM3"<<"COM4");
 #else
-    ui->portBox->addItems(QStringList()<<QLatin1String("/dev/ttyS0")<<QLatin1String("/dev/ttyS1")<<QLatin1String("/dev/ttyUSB0")<<QLatin1String("/dev/ttyUSB1"));
+    ui->portBox->addItems(QStringList()<<"/dev/ttyS0"<<"/dev/ttyS1"<<"/dev/ttyUSB0"<<"/dev/ttyUSB1");
 #endif
     //make sure user can input their own port name!
     ui->portBox->setEditable(true);
@@ -28,15 +29,18 @@ Dialog::Dialog(QWidget *parent) :
     ui->dataBitsBox->setCurrentIndex(3);
 
     ui->stopBitsBox->addItems(QextSerialHelper::getStopBitsList());
+    //! [0]
 
     ui->led->turnOff();
 
+    //! [1]
     port = new QextSerialPort(ui->portBox->currentText());
     port->setBaudRate(QextSerialPort::BAUD9600);
     port->setDataBits(QextSerialPort::DATA_8);
     port->setParity(QextSerialPort::PAR_NONE);
     port->setStopBits(QextSerialPort::STOP_1);
     port->setFlowControl(QextSerialPort::FLOW_OFF);
+    //! [1]
 
     connect(ui->baudRateBox, SIGNAL(currentIndexChanged(int)), SLOT(onPortSettingsChanged()));
     connect(ui->parityBox, SIGNAL(currentIndexChanged(int)), SLOT(onPortSettingsChanged()));
@@ -48,7 +52,7 @@ Dialog::Dialog(QWidget *parent) :
     connect(ui->sendButton, SIGNAL(clicked()), SLOT(onSendButtonClicked()));
     connect(port, SIGNAL(readyRead()), SLOT(onReadyRead()));
 
-    setWindowTitle(QLatin1String("QextSerialPort Demo"));
+    setWindowTitle(tr("QextSerialPort Demo"));
 }
 
 Dialog::~Dialog()
@@ -76,6 +80,7 @@ void Dialog::onPortNameChanged(const QString & /*name*/)
         ui->led->turnOff();
     }
 }
+//! [2]
 
 void Dialog::onPortSettingsChanged()
 {
@@ -86,6 +91,8 @@ void Dialog::onPortSettingsChanged()
     port->setTimeout(ui->timeoutBox->value());
 }
 
+//! [2]
+//! [3]
 void Dialog::onOpenCloseButtonClicked()
 {
     if (!port->isOpen()) {
@@ -99,6 +106,8 @@ void Dialog::onOpenCloseButtonClicked()
     ui->led->turnOn(port->isOpen());
 }
 
+//! [3]
+//! [4]
 void Dialog::onSendButtonClicked()
 {
     if (port->isOpen() && !ui->sendEdit->toPlainText().isEmpty())

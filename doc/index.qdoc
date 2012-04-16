@@ -2,7 +2,7 @@
     \page index.html
     \title QextSerialPort Manual
 
-    \section1 Description
+    \section1 Overview
       QextSerialPort provides an interface to old fashioned serial ports for
       Qt-based applications. It currently supports Mac OS X, Windows, Linux, FreeBSD. 
 
@@ -11,6 +11,7 @@
       \list
          \li Revision 0.9.x is Qt 2 & 3 compatible.
          \li Revision 1.x.x is Qt 4 compatible.
+         \li From revision 1.2beta1 on, Qt 5 support is added.
       \endlist
 
         
@@ -21,7 +22,7 @@
       \li \l ExtSerialPort qml api of QextSeralPort.
       \endlist
     
-    \section1 Usage
+    \section1 Getting Started
       The package contains a qextserialport.pri file that allows you to integrate the 
       component into programs that use qmake for the build step.
 
@@ -30,7 +31,25 @@
       include(pathToPri/qextserialport.pri)
       \endcode
 
-    \section2 Using QexSerialPort library
+      Then, using QextSerialPort in your code
+      \code
+      #include "qextserialport.h"
+      ... 
+      MyClass::MyClass()
+      {
+          QextSerialPort* port = new QextSerialPort("COM1");
+          connect(port, SIGNAL(readyRead()), myClass, SLOT(onDataAvailable()));
+          port->open();
+      }
+  
+      void MyClass::onDataAvailable()
+      {
+          QByteArray data = port->readAll();
+          processNewData(usbdata);
+      }
+      \endcode
+
+    \section2 Using QexSerialPort as library
       Although QextSerialPort can be directly compiled into your application, You may prefer
       to use QextSerailPort as an library, which is very easy too.
 
@@ -97,11 +116,6 @@
 /*!
   \page classes.html
   \generatelist annotatedclasses
-  */
-
-/*!
-  \page functions.html
-  \generatelist functionindex
 */
 
 /*!
