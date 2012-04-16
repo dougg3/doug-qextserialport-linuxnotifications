@@ -153,7 +153,7 @@ public:
 #if defined(Q_OS_WIN) || defined(qdoc)
         PAR_MARK,
 #endif
-        PAR_SPACE
+        PAR_SPACE = 4
     };
 
     enum StopBitsType
@@ -162,7 +162,7 @@ public:
 #if defined(Q_OS_WIN) || defined(qdoc)
         STOP_1_5,
 #endif
-        STOP_2
+        STOP_2 = 2
     };
 
     enum FlowType
