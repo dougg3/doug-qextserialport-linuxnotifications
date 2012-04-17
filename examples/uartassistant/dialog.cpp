@@ -121,3 +121,4 @@ void Dialog::onReadyRead()
         ui->recvEdit->insertPlainText(QString::fromLatin1(port->readAll()));
     }
 }
+//! [4]

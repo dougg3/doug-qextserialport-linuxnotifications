@@ -512,6 +512,17 @@ QextSerialPort::QextSerialPort(const QString & name, BaudRateType baud, ParityTy
 }
 
 /*!
+   Destructs the QextSerialPort object.
+*/
+QextSerialPort::~QextSerialPort()
+{
+    if (isOpen()) {
+        close();
+    }
+    delete d_ptr;
+}
+
+/*!
     Opens a serial port and sets its OpenMode to \a mode.
     Note that this function does not specify which device to open.
     Returns true if successful; otherwise returns false.This function has no effect
@@ -587,25 +598,6 @@ bool QextSerialPort::canReadLine() const
 }
 
 /*!
-    Sets the name of the device associated with the object, e.g. "COM1", or "/dev/ttyS0".
-*/
-void QextSerialPort::setPortName(const QString & name)
-{
-    Q_D(QextSerialPort);
-    QWriteLocker locker(&d->lock);
-    d->port = name;
-}
-
-/*!
-    Returns the name set by setPortName().
-*/
-QString QextSerialPort::portName() const
-{
-    QReadLocker locker(&d_func()->lock);
-    return d_func()->port;
-}
-
-/*!
     Reads all available data from the device, and returns it as a QByteArray.
     This function has no way of reporting errors; returning an empty QByteArray()
     can mean either that no data was currently available for reading, or that an error occurred.
@@ -617,18 +609,61 @@ QByteArray QextSerialPort::readAll()
 }
 
 /*!
-    Returns the baud rate of the serial port.  For a list of possible return values see
-    the definition of the enum BaudRateType.
+  \property QextSerialPort::portName
+  \brief Gets and sets the name associated with the serial port
+
+  Port name is platform special, e.g. "COM1", or "/dev/ttyS0".
+
+  You can get available port names by QextSerialEnumrator or QextSerialHelper.
 */
-QextSerialPort::BaudRateType QextSerialPort::baudRate(void) const
+
+QString QextSerialPort::portName() const
+{
+    QReadLocker locker(&d_func()->lock);
+    return d_func()->port;
+}
+
+void QextSerialPort::setPortName(const QString & name)
+{
+    Q_D(QextSerialPort);
+    QWriteLocker locker(&d->lock);
+    d->port = name;
+}
+
+/*!
+  \property QextSerialPort::baudRate
+  \brief Gets and sets the baudRate associated with the serial port
+
+  Note that not all rates are applicable on all platforms. For a list of
+  possible values see the definition of the enum BaudRateType.
+*/
+QextSerialPort::BaudRateType QextSerialPort::baudRate() const
 {
     QReadLocker locker(&d_func()->lock);
     return d_func()->Settings.BaudRate;
 }
 
+void QextSerialPort::setBaudRate(BaudRateType baudRate)
+{
+    Q_D(QextSerialPort);
+    QWriteLocker locker(&d->lock);
+    if (d->Settings.BaudRate != baudRate)
+        d->setBaudRate(baudRate, true);
+}
+
 /*!
-    Returns the number of data bits used by the port.  For a list of possible values returned by
-    this function, see the definition of the enum DataBitsType.
+  \property QextSerialPort::dataBits
+  \brief Gets and sets the dataBits associated with the serial port
+
+  For a list of possible values, see the definition of the enum DataBitsType.
+
+  \b note:
+  This property is subject to the following restrictions:
+    \list
+    \li 5 data bits cannot be used with 2 stop bits.
+    \li 1.5 stop bits can only be used with 5 data bits.
+    \li 8 data bits cannot be used with space parity on POSIX systems.
+    \endlist
 */
 QextSerialPort::DataBitsType QextSerialPort::dataBits() const
 {
@@ -636,9 +671,19 @@ QextSerialPort::DataBitsType QextSerialPort::dataBits() const
     return d_func()->Settings.DataBits;
 }
 
+void QextSerialPort::setDataBits(DataBitsType dataBits)
+{
+    Q_D(QextSerialPort);
+    QWriteLocker locker(&d->lock);
+    if (d->Settings.DataBits != dataBits)
+        d->setDataBits(dataBits, true);
+}
+
 /*!
-    Returns the type of parity used by the port.  For a list of possible values returned by
-    this function, see the definition of the enum ParityType.
+  \property QextSerialPort::parity
+  \brief Gets and sets the parity associated with the serial port
+
+  For a list of possible values see the definition of the enum ParityType.
 */
 QextSerialPort::ParityType QextSerialPort::parity() const
 {
@@ -646,9 +691,27 @@ QextSerialPort::ParityType QextSerialPort::parity() const
     return d_func()->Settings.Parity;
 }
 
+void QextSerialPort::setParity(ParityType parity)
+{
+    Q_D(QextSerialPort);
+    QWriteLocker locker(&d->lock);
+    if (d->Settings.Parity != parity)
+        d->setParity(parity, true);
+}
+
 /*!
-    Returns the number of stop bits used by the port.  For a list of possible return values, see
-    the definition of the enum StopBitsType.
+  \property QextSerialPort::stopBits
+  \brief Gets and sets the stopBits associated with the serial port
+
+   For a list of possible values, see the definition of the enum StopBitsType.
+
+  \b note:
+  This function is subject to the following restrictions:
+    \list
+    \li 2 stop bits cannot be used with 5 data bits.
+    \li 1.5 stop bits cannot be used with 6 or more data bits.
+    \li POSIX does not support 1.5 stop bits.
+    \endlist
 */
 QextSerialPort::StopBitsType QextSerialPort::stopBits() const
 {
@@ -656,14 +719,32 @@ QextSerialPort::StopBitsType QextSerialPort::stopBits() const
     return d_func()->Settings.StopBits;
 }
 
+void QextSerialPort::setStopBits(StopBitsType stopBits)
+{
+    Q_D(QextSerialPort);
+    QWriteLocker locker(&d->lock);
+    if (d->Settings.StopBits != stopBits)
+        d->setStopBits(stopBits, true);
+}
+
 /*!
-    Returns the type of flow control used by the port.  For a list of possible values returned
-    by this function, see the definition of the enum FlowType.
+  \property QextSerialPort::flowControl
+  \brief Gets and sets the flowControl associated with the serial port
+
+  For a list of possible values, see the definition of the enum FlowType.
 */
 QextSerialPort::FlowType QextSerialPort::flowControl() const
 {
     QReadLocker locker(&d_func()->lock);
     return d_func()->Settings.FlowControl;
+}
+
+void QextSerialPort::setFlowControl(FlowType flow)
+{
+    Q_D(QextSerialPort);
+    QWriteLocker locker(&d->lock);
+    if (d->Settings.FlowControl != flow)
+        d->setFlowControl(flow, true);
 }
 
 /*!
@@ -754,94 +835,11 @@ QString QextSerialPort::errorString()
 }
 
 /*!
-   Destructs the QextSerialPort object.
-*/
-QextSerialPort::~QextSerialPort()
-{
-    if (isOpen()) {
-        close();
-    }
-    delete d_ptr;
-}
+  \internal
 
-/*!
-    Sets the flow control used by the port to \a flow.  Possible values of flow are:
-*/
-void QextSerialPort::setFlowControl(FlowType flow)
-{
-    Q_D(QextSerialPort);
-    QWriteLocker locker(&d->lock);
-    if (d->Settings.FlowControl != flow)
-        d->setFlowControl(flow, true);
-}
+  Consider remove this function when QESP 2.0 released, as we will only support event-driven mode
+  in QESP 2.0.
 
-/*!
-    Sets the parity associated with the serial port to \a parity.  The possible values of parity are:
-*/
-void QextSerialPort::setParity(ParityType parity)
-{
-    Q_D(QextSerialPort);
-    QWriteLocker locker(&d->lock);
-    if (d->Settings.Parity != parity)
-        d->setParity(parity, true);
-}
-
-/*!
-    Sets the number of data bits used by the serial port to \a dataBits.  Possible values of dataBits are:
-
-    \b note:
-    This function is subject to the following restrictions:
-    \list
-    \li 5 data bits cannot be used with 2 stop bits.
-    \li 1.5 stop bits can only be used with 5 data bits.
-    \li 8 data bits cannot be used with space parity on POSIX systems.
-    \endlist
-    */
-void QextSerialPort::setDataBits(DataBitsType dataBits)
-{
-    Q_D(QextSerialPort);
-    QWriteLocker locker(&d->lock);
-    if (d->Settings.DataBits != dataBits)
-        d->setDataBits(dataBits, true);
-}
-
-/*!
-    Sets the number of stop bits used by the serial port to \a stopBits.  Possible values of stopBits are:
-
-    \b note:
-    This function is subject to the following restrictions:
-    \list
-    \li 2 stop bits cannot be used with 5 data bits.
-    \li 1.5 stop bits cannot be used with 6 or more data bits.
-    \li POSIX does not support 1.5 stop bits.
-    \endlist
-*/
-void QextSerialPort::setStopBits(StopBitsType stopBits)
-{
-    Q_D(QextSerialPort);
-    QWriteLocker locker(&d->lock);
-    if (d->Settings.StopBits != stopBits)
-        d->setStopBits(stopBits, true);
-}
-
-/*!
-    Sets the baud rate of the serial port to \a baudRate.  Note that not all rates are applicable on
-    all platforms.  The following table shows translations of the various baud rate
-    constants on Windows(including NT/2000) and POSIX platforms.  Speeds marked with an *
-    are speeds that are usable on both Windows and POSIX.
-
-*/
-
-void QextSerialPort::setBaudRate(BaudRateType baudRate)
-{
-    Q_D(QextSerialPort);
-    QWriteLocker locker(&d->lock);
-    if (d->Settings.BaudRate != baudRate)
-        d->setBaudRate(baudRate, true);
-}
-
-
-/*!
     For Unix:
 
     Sets the read and write timeouts for the port to \a millisec milliseconds.
