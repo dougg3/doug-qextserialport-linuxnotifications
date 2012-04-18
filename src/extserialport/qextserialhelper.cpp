@@ -61,6 +61,8 @@ static int keyToValue(const char *type, const QString &key)
 /*! \class QextSerialHelper
 
     \brief The QextSerialHelper class provides some convenient functions to ease the use of QextSerialPort.
+
+    \inmodule QtExtSerialPort
 */
 
 QextSerialHelper::QextSerialHelper(QObject *parent) :

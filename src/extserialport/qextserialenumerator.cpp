@@ -52,6 +52,8 @@ QextSerialEnumeratorPrivate::~QextSerialEnumeratorPrivate()
 
   \brief The QextPortInfo class containing port information.
 
+  \inmodule QtExtSerialPort
+
   Structure containing port information.
 
   \code
