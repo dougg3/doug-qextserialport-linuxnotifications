@@ -90,6 +90,8 @@ public:
    \qmlclass ExtSerialPort QextQmlSerialPort
    \brief Enables you to connect and communicate with a serial port.
 
+   \inmodule QtExtSerialPort
+
    \qml
     import QtExtSerialPort 2.0
 

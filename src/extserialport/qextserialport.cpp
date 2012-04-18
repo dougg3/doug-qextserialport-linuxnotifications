@@ -283,6 +283,8 @@ void QextSerialPortPrivate::_q_canRead()
 
     \brief The QextSerialPort class encapsulates a serial port on both POSIX and Windows systems.
 
+    \inmodule QtExtSerialPort
+
     \section1 Usage
     QextSerialPort offers both a polling and event driven API.  Event driven
     is typically easier to use, since you never have to worry about checking
@@ -407,6 +409,30 @@ void QextSerialPortPrivate::_q_canRead()
     \value LS_SR       Secondary RXD (POSIX only)
 */
 
+
+/*!
+    \enum QextSerialPort::ErrorNumber
+
+    \value E_NO_ERROR
+    \omitvalue E_INVALID_FD
+    \omitvalue E_NO_MEMORY
+    \omitvalue E_CAUGHT_NON_BLOCKED_SIGNAL
+    \omitvalue E_PORT_TIMEOUT
+    \omitvalue E_INVALID_DEVICE
+    \omitvalue E_BREAK_CONDITION
+    \omitvalue E_FRAMING_ERROR
+    \omitvalue E_IO_ERROR
+    \omitvalue E_BUFFER_OVERRUN
+    \omitvalue E_RECEIVE_OVERFLOW
+    \omitvalue E_RECEIVE_PARITY_ERROR
+    \omitvalue E_TRANSMIT_OVERFLOW
+    \omitvalue E_READ_FAILED
+    \omitvalue E_WRITE_FAILED
+    \omitvalue E_FILE_NOT_FOUND
+    \omitvalue E_PERMISSION_DENIED
+    \omitvalue E_AGAIN
+*/
+
 /*!
     \fn void QextSerialPort::dsrChanged(bool status)
     This signal is emitted whenever dsr line has changed its state. You may
@@ -417,7 +443,9 @@ void QextSerialPortPrivate::_q_canRead()
 
 
 /*!
-    Default constructor.  Note that the name of the device used by a QextSerialPort constructed with
+    Constructs a QextSerialPort object with the given \a parent.
+
+    Note that the name of the device used by a QextSerialPort constructed with
     this constructor will be determined by #defined constants, or lack thereof - the default behavior
     is the same as Q_OS_LINUX.  Possible naming conventions and their associated constants are:
 
@@ -474,7 +502,7 @@ QextSerialPort::QextSerialPort(QObject *parent)
 
     Constructs a serial port attached to the port specified by name.
     \a name is the name of the device, which is windowsystem-specific,
-    e.g."COM1" or "/dev/ttyS0". \a mode
+    e.g."COM1" or "/dev/ttyS0".
 */
 QextSerialPort::QextSerialPort(const QString & name, QObject *parent)
     : QIODevice(parent), d_ptr(new QextSerialPortPrivate(this))
@@ -485,7 +513,7 @@ QextSerialPort::QextSerialPort(const QString & name, QObject *parent)
 /*!
     \overload
 
-    Constructs a port with default name and specified settings.
+    Constructs a port with specified \a name and specified settings.
 */
 QextSerialPort::QextSerialPort(const QString & name, BaudRateType baud, QObject * parent)
     : QIODevice(parent), d_ptr(new QextSerialPortPrivate(this))
@@ -498,7 +526,7 @@ QextSerialPort::QextSerialPort(const QString & name, BaudRateType baud, QObject 
 /*!
     \overload
 
-    Constructs a port with specified name and settings.
+    Constructs a port with specified \a name and settings.
 */
 QextSerialPort::QextSerialPort(const QString & name, BaudRateType baud, ParityType par, DataBitsType dataBits, StopBitsType stopBits, QObject *parent)
     : QIODevice(parent), d_ptr(new QextSerialPortPrivate(this))
