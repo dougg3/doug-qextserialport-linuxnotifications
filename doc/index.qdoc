@@ -14,21 +14,38 @@
          \li From revision 1.2beta1 on, Qt 5 support is added.
       \endlist
 
-        
     \section1 Classes
       \list
       \li \l QextSerialPort encapsulates a serial port on both POSIX and Windows systems.
       \li \l QextSerialEnumerator enumerates ports currently available in the system.
-      \li \l ExtSerialPort qml api of QextSeralPort.
+      \li \l QextSerialHelper convenient class for QextSerialPort.
+      \li \l ExtSerialPort QML api of QextSerialPort.
       \endlist
-    
-    \section1 Getting Started
-      The package contains a qextserialport.pri file that allows you to integrate the 
-      component into programs that use qmake for the build step.
 
-      All you need is adding following line to your qmake project file:
+    \section1 Getting Started
+     QextSerailPort can be used in two different ways:
+     \list
+     \li Normal Mode for Qt5 Only  (C++ & QML API)
+     \li Compat Mode for Qt4 & Qt5 (C++ API Only)
+     \endlist
+
+    \section1 Normal Mode
+    
+     Build and use this library as a module of Qt5
+
+     Note: Perl is needed.
+
+    \section2 Build and install
+     At the toplevel directory, run
       \code
-      include(pathToPri/qextserialport.pri)
+      qmake
+      make
+      \endcode
+
+    \section2 C++ API
+      Add following line to your qmake project file:
+      \code
+      QT += extserialport
       \endcode
 
       Then, using QextSerialPort in your code
@@ -37,8 +54,8 @@
       ... 
       MyClass::MyClass()
       {
-          QextSerialPort* port = new QextSerialPort("COM1");
-          connect(port, SIGNAL(readyRead()), myClass, SLOT(onDataAvailable()));
+          port = new QextSerialPort("COM1");
+          connect(port, SIGNAL(readyRead()), this, SLOT(onDataAvailable()));
           port->open();
       }
   
@@ -49,9 +66,43 @@
       }
       \endcode
 
+    \section2 QML API
+
+    \qml
+    import QtExtSerialPort 2.0
+
+    ExtSerialPort
+    {
+        id: port
+        portName: "COM22"
+        baudRate: 19200
+        parity: ExtSerialPort.PAR_EVEN
+        dataBits: ExtSerialPort.DATA_6
+        connected: true
+        //shown data in TextEdit
+        onDataAvailable: recvText.text = port.stringData
+    }
+   \endqml
+    
+    \section1 Compat Mode
+     \list
+     \li Provide the same usage as QextSerialPort 1.2
+     \li Support Qt4 and Qt5
+     \li Can be used as static or shared library, or simply integrate the component into application.
+     \endlist
+
+    \section2 Integrate into application.
+      The package contains a qextserialport.pri file that allows you to integrate the 
+      component into programs that use qmake for the build step.
+
+      All you need is adding following line to your qmake project file:
+      \code
+      include(pathToQesp/compat/qextserialport.pri)
+      \endcode
+
     \section2 Using QexSerialPort as library
       Although QextSerialPort can be directly compiled into your application, You may prefer
-      to use QextSerailPort as an library, which is very easy too.
+      to use QextSerialPort as an library, which is very easy too.
 
       1. Write a config.pri file.(read config_example.pri for reference):
 
@@ -69,15 +120,8 @@
 
       3.  Add following line to your qmake project file:
       \code
-      include(pathToPri/qextserialport.pri)
+      include(pathToQesp/compat/qextserialport.pri)
       \endcode
-
-     \section2 Build documents
-      Run qdoc3 from the doc directory.
-      \code
-        qdoc3 qextserialport.qdocconf
-      \endcode
-      Note: qdoc3 has been renamed to qdoc under Qt5.
 
     \section1 Examples
       \list
