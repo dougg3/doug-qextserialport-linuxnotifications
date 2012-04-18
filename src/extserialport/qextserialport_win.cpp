@@ -37,7 +37,11 @@
 #include <QtCore/QDebug>
 #include <QtCore/QRegExp>
 #include <QtCore/QMetaType>
-#include <QtCore/QWinEventNotifier>
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#  include <QtCore/private/qwineventnotifier_p.h>
+#else
+#  include <QtCore/QWinEventNotifier>
+#endif
 
 void QextSerialPortPrivate::platformSpecificInit()
 {

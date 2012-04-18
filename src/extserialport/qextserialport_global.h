@@ -34,10 +34,17 @@
 
 #include <QtCore/QtGlobal>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+//only support compat mode for Qt4
+#define QEXTSERIALPORT_COMPAT
+#endif
+
 #ifdef QEXTSERIALPORT_BUILD_SHARED
 #  define QEXTSERIALPORT_EXPORT Q_DECL_EXPORT
-#else
+#elif !defined(QEXTSERIALPORT_COMPAT) || defined(QEXTSERIALPORT_USING_SHARED)
 #  define QEXTSERIALPORT_EXPORT Q_DECL_IMPORT
+#else
+#  define QEXTSERIALPORT_EXPORT
 #endif
 
 /*if all warning messages are turned off, flag portability warnings to be turned off as well*/
