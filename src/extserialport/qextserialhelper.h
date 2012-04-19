@@ -31,7 +31,9 @@
 #include "qextserialport.h"
 #include <QtCore/QObject>
 
+QT_BEGIN_NAMESPACE
 class QStringList;
+QT_END_NAMESPACE
 
 class QEXTSERIALPORT_EXPORT QextSerialHelper : public QObject
 {
