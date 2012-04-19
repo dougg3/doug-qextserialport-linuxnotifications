@@ -182,9 +182,11 @@ public:
     long Timeout_Millisec;
 };
 
+QT_BEGIN_NAMESPACE
 class QWinEventNotifier;
 class QReadWriteLock;
 class QSocketNotifier;
+QT_END_NAMESPACE
 
 class QextSerialPortPrivate
 {
