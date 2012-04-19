@@ -34,9 +34,9 @@
 
 #include <QtCore/QtGlobal>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0) && !defined(QEXTSERIALPORT_COMPAT)
 //only support compat mode for Qt4
-#define QEXTSERIALPORT_COMPAT
+#  define QEXTSERIALPORT_COMPAT
 #endif
 
 #ifdef QEXTSERIALPORT_BUILD_SHARED
