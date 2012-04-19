@@ -1,5 +1,4 @@
 TEMPLATE=subdirs
 CONFIG += ordered
-include(common.pri)
-qextserialport-library:SUBDIRS=buildlib
+infile($$PWD/config.pri, QEXTSERIALPORT_LIBRARY, yes)::SUBDIRS=buildlib
 SUBDIRS+=examples
