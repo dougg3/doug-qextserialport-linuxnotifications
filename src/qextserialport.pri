@@ -25,7 +25,8 @@ qextserialport-library:!qextserialport-buildlib {
     SOURCES                += $$PWD/qextserialport.cpp \
                               $$PWD/qextserialenumerator.cpp
     unix:SOURCES           += $$PWD/qextserialport_unix.cpp
-    unix:!macx:SOURCES     += $$PWD/qextserialenumerator_unix.cpp
+    #unix:!macx:SOURCES     += $$PWD/qextserialenumerator_unix.cpp
+    unix:!macx:SOURCES     += $$PWD/qextserialenumerator_linux.cpp
     macx:SOURCES           += $$PWD/qextserialenumerator_osx.cpp
     win32:SOURCES          += $$PWD/qextserialport_win.cpp \
                               $$PWD/qextserialenumerator_win.cpp
@@ -45,3 +46,7 @@ qextserialport-library:!qextserialport-buildlib {
 
 macx:LIBS              += -framework IOKit -framework CoreFoundation
 win32:LIBS             += -lsetupapi -ladvapi32 -luser32
+unix:!macx:LIBS        += -ludev
+
+# moc doesn't detect Q_OS_LINUX correctly, so add this to make it work
+unix:!macx:DEFINES     += __linux__
