@@ -100,6 +100,10 @@ void QextSerialEnumeratorPrivate::platformSpecificDestruct()
     DEFINE_GUID(GUID_DEVCLASS_PORTS, 0x4D36E978, 0xE325, 0x11CE, 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 );
 #endif
 
+#ifndef GUID_DEVCLASS_USBRAW
+    DEFINE_GUID(GUID_DEVCLASS_USBRAW, 0xa5dcbf10, 0x6530, 0x11d2, 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed );
+#endif
+
 /* Gordon Schumacher's macros for TCHAR -> QString conversions and vice versa */
 #ifdef UNICODE
     #define QStringToTCHAR(x)     (wchar_t*) x.utf16()
@@ -244,6 +248,12 @@ bool QextSerialEnumeratorPrivate::setUpNotifications_sys(bool setup)
     dbh.dbcc_size = sizeof(dbh);
     dbh.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
     ::CopyMemory(&dbh.dbcc_classguid, &GUID_DEVCLASS_PORTS, sizeof(GUID));
+    if(::RegisterDeviceNotification((HWND)notificationWidget->winId(), &dbh, DEVICE_NOTIFY_WINDOW_HANDLE ) == NULL) {
+        QESP_WARNING() << "RegisterDeviceNotification failed:" << GetLastError();
+        return false;
+    }
+
+    ::CopyMemory(&dbh.dbcc_classguid, &GUID_DEVCLASS_USBRAW, sizeof(GUID));
     if(::RegisterDeviceNotification((HWND)notificationWidget->winId(), &dbh, DEVICE_NOTIFY_WINDOW_HANDLE ) == NULL) {
         QESP_WARNING() << "RegisterDeviceNotification failed:" << GetLastError();
         return false;

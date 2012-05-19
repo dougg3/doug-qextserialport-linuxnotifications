@@ -60,6 +60,11 @@
 #  include <IOKit/usb/IOUSBLib.h>
 #endif /*Q_OS_MAC*/
 
+#ifdef Q_OS_LINUX
+#include <QSocketNotifier>
+#include <libudev.h>
+#endif
+
 class QextSerialRegistrationWidget;
 class QextSerialEnumeratorPrivate
 {
@@ -95,6 +100,15 @@ public:
 
     IONotificationPortRef notificationPortRef;
 #endif // Q_OS_MAC
+
+#ifdef Q_OS_LINUX
+    QSocketNotifier *notifier;
+    int notifierFd;
+    struct udev *udev;
+    struct udev_monitor *monitor;
+
+    void _q_deviceEvent();
+#endif
 
 private:
     QextSerialEnumerator * q_ptr;
