@@ -62,7 +62,9 @@
 
 #ifdef Q_OS_LINUX
 #include <QSocketNotifier>
+extern "C" {
 #include <libudev.h>
+}
 #endif
 
 class QextSerialRegistrationWidget;
